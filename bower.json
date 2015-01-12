@@ -1,0 +1,19 @@
+{
+  "name": "angular-oauth2",
+  "version": "1.0.0",
+  "description": "AngularJS OAuth2",
+  "main": "index.js",
+  "keywords": [
+    "AngularJS",
+    "OAuth2"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/seegno/angular-oauth2",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
