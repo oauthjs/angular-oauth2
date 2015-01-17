@@ -2,7 +2,7 @@
   "name": "angular-oauth2",
   "version": "1.0.0",
   "description": "AngularJS OAuth2",
-  "main": "./src/angular-oauth2.js",
+  "main": "./dist/angular-oauth2.js",
   "authors": [
     "Seegno <projects@seegno.com>"
   ],
