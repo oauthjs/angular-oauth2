@@ -2,9 +2,13 @@
   "name": "angular-oauth2",
   "version": "1.0.0",
   "description": "AngularJS OAuth2",
-  "main": "index.js",
+  "main": "./dist/angular-oauth2.js",
+  "authors": [
+    "Seegno <projects@seegno.com>"
+  ],
   "keywords": [
     "AngularJS",
+    "Authentication",
     "OAuth2"
   ],
   "license": "MIT",
@@ -15,5 +19,10 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "angular": "1.3.9",
+    "angular-cookie": "4.0.6",
+    "query-string": "1.0.0"
+  }
 }
