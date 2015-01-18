@@ -17,40 +17,40 @@ Choose your preferred method:
 1. Include `angular-oauth2` and dependencies.
 
 ```html
-    <script src="bower_components/angular/angular.min.js"></script>
-    <script src="bower_components/angular-cookie/dist/angular-cookie.min.js"></script>
-    <script src="bower_components/query-string/query-string.min.js"></script>
-    <script src="bower_components/angular-oauth2/dist/angular-oauth2.min.js"></script>
+<script src="bower_components/angular/angular.min.js"></script>
+<script src="bower_components/angular-cookie/dist/angular-cookie.min.js"></script>
+<script src="bower_components/query-string/query-string.min.js"></script>
+<script src="bower_components/angular-oauth2/dist/angular-oauth2.min.js"></script>
 ```
 
 2. Configure `OAuth` (required) and `OAuthToken` (optional):
 
 ```js
 angular.module('myApp', ['angular-oauth2'])
-    .config(['OAuthProvider', function(OAuthProvider) {
-        OAuthProvider.configure({
-            baseUrl: 'https://api.website.com',
-            clientId: 'CLIENT_ID',
-            clientSecret: 'CLIENT_SECRET',
-        });
-    }]);
+  .config(['OAuthProvider', function(OAuthProvider) {
+    OAuthProvider.configure({
+      baseUrl: 'https://api.website.com',
+      clientId: 'CLIENT_ID',
+      clientSecret: 'CLIENT_SECRET',
+    });
+  }]);
 ```
 
 3. Catch `OAuth` errors and do something with them (optional):
 
 ```js
 angular.module('myApp', ['angular-oauth2'])
-    .run(['$rootScope', '$window', function($rootScope, $window) {
-        $rootScope.$on('oauth:error', function(event, rejection) {
-            // Ignore `invalid_grant` error - should be catched on `LoginController`.
-            if ('invalid_grant' === rejection.data.error) {
-                return;
-            }
+  .run(['$rootScope', '$window', function($rootScope, $window) {
+    $rootScope.$on('oauth:error', function(event, rejection) {
+      // Ignore `invalid_grant` error - should be catched on `LoginController`.
+      if ('invalid_grant' === rejection.data.error) {
+        return;
+      }
 
-            // Redirect to `/login` with the `error_reason`.
-            return $window.location.href = '/login?error_reason=' + rejection.data.error;
-        });
-    }]);
+      // Redirect to `/login` with the `error_reason`.
+      return $window.location.href = '/login?error_reason=' + rejection.data.error;
+    });
+  }]);
 ```
 
 Dependencies:
@@ -67,11 +67,11 @@ Configuration defaults:
 
 ```js
 OAuthProvider.configure({
-    baseUrl: null,
-    clientId: null,
-    clientSecret: null,
-    grantPath: '/oauth2/token',
-    revokePath: '/oauth2/revoke'
+  baseUrl: null,
+  clientId: null,
+  clientSecret: null,
+  grantPath: '/oauth2/token',
+  revokePath: '/oauth2/revoke'
 });
 ```
 
@@ -145,11 +145,11 @@ Configuration defaults:
 
 ```js
 OAuthProvider.configure({
-    name: 'token',
-    options: {
-      secure: true
-    }
-  });
+  name: 'token',
+  options: {
+    secure: true
+  }
+});
 ```
 
 ## Contributing & Development
