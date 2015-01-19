@@ -1,6 +1,6 @@
 /**
  * angular-oauth2 - Angular OAuth2
- * @version v1.0.1
+ * @version v1.0.2
  * @link https://github.com/seegno/angular-oauth2
  * @license MIT
  */
