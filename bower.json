@@ -1,6 +1,6 @@
 {
   "name": "angular-oauth2",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AngularJS OAuth2",
   "main": "./dist/angular-oauth2.js",
   "authors": [
@@ -15,10 +15,12 @@
   "homepage": "https://github.com/seegno/angular-oauth2",
   "ignore": [
     "**/.*",
-    "node_modules",
     "bower_components",
-    "test",
-    "tests"
+    "gulpfile.js",
+    "karma.conf.js",
+    "node_modules",
+    "package.json",
+    "test"
   ],
   "dependencies": {
     "angular": "1.3.9",
