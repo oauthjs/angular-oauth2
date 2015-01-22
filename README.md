@@ -10,7 +10,7 @@ Choose your preferred method:
 
 * Bower: `bower install angular-oauth2`
 * NPM: `npm install --save angular-oauth2`
-* Download: [angular-oauth2](https://raw.github.com/seegno/angular-oauth2/master/angular-oauth2.min.js)
+* Download: [angular-oauth2](https://raw.github.com/seegno/angular-oauth2/master/dist/angular-oauth2.min.js)
 
 ## Usage
 
