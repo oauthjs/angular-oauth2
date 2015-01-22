@@ -131,7 +131,7 @@ Revoke access token:
 OAuth.revokeToken()
 ```
 
-**NOTE**: An *event* `oauth:error` will be sent everytime everytime a `responseError` is emitted:
+**NOTE**: An *event* `oauth:error` will be sent everytime a `responseError` is emitted:
 
 * `{ status: 400, data: { error: 'invalid_request' }`
 * `{ status: 400, data: { error: 'invalid_grant' }`
