@@ -95,19 +95,6 @@ describe('oauthInterceptor', function() {
     $rootScope.$emit.restore();
   }));
 
-  it('should remove `token` if an `invalid_token` error occurs', inject(function($http, $httpBackend, OAuthToken) {
-    sinon.spy(OAuthToken, 'removeToken');
-
-    $httpBackend.expectGET('https://website.com').respond(401, { error: 'invalid_token' });
-
-    $http.get('https://website.com');
-
-    $httpBackend.flush();
-
-    OAuthToken.removeToken.callCount.should.equal(1);
-    OAuthToken.removeToken.restore();
-  }));
-
   it('should emit `oauth:error` event if an `invalid_token` error occurs', inject(function($http, $httpBackend, $rootScope) {
     sinon.spy($rootScope, '$emit');
 
