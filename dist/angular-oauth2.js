@@ -28,8 +28,11 @@
                 return config;
             },
             responseError: function(rejection) {
-                if (400 === rejection.status && rejection.data && "invalid_request" === rejection.data.error || 400 === rejection.status && "invalid_grant" === rejection.data.error || 401 === rejection.status && rejection.data && "invalid_token" === rejection.data.error) {
+                if (400 === rejection.status && rejection.data && ("invalid_request" === rejection.data.error || "invalid_grant" === rejection.data.error)) {
                     OAuthToken.removeToken();
+                    $rootScope.$emit("oauth:error", rejection);
+                }
+                if (401 === rejection.status && rejection.data && "invalid_token" === rejection.data.error) {
                     $rootScope.$emit("oauth:error", rejection);
                 }
                 return $q.reject(rejection);
@@ -233,7 +236,7 @@
                     },
                     removeToken: {
                         value: function removeToken() {
-                            return ipCookie.remove(config.name);
+                            return ipCookie.remove(config.name, config.options);
                         },
                         writable: true,
                         enumerable: true,
