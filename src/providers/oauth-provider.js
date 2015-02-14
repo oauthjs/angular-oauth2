@@ -14,6 +14,13 @@ var defaults = {
   revokePath: '/oauth2/revoke'
 };
 
+var requiredKeys = [
+  'baseUrl',
+  'clientId',
+  'grantPath',
+  'revokePath'
+];
+
 /**
  * OAuth provider.
  */
@@ -41,9 +48,9 @@ function OAuthProvider() {
     // Extend default configuration.
     config = angular.extend({}, defaults, params);
 
-    // Check if all keys are set.
-    angular.forEach(config, (value, key) => {
-      if (!value) {
+    // Check if all required keys are set.
+    angular.forEach(requiredKeys, (key) => {
+      if (!config[key]) {
         throw new Error(`Missing parameter: ${key}.`);
       }
     });
@@ -111,13 +118,18 @@ function OAuthProvider() {
           throw new Error('`user` must be an object with `username` and `password` properties.');
         }
 
-        var data = queryString.stringify({
+        var data = {
           client_id: config.clientId,
-          client_secret: config.clientSecret,
           grant_type: 'password',
           username: user.username,
           password: user.password
-        });
+        };
+
+        if (null !== config.clientSecret) {
+          data.client_secret = config.clientSecret;
+        }
+
+        data = queryString.stringify(data);
 
         options = angular.extend({
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -138,12 +150,17 @@ function OAuthProvider() {
        */
 
       getRefreshToken() {
-        var data = queryString.stringify({
+        var data = {
           client_id: config.clientId,
-          client_secret: config.clientSecret,
           grant_type: 'refresh_token',
           refresh_token: OAuthToken.getRefreshToken(),
-        });
+        };
+
+        if (null !== config.clientSecret) {
+          data.client_secret = config.clientSecret;
+        }
+
+        data = queryString.stringify(data);
 
         var options = {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
