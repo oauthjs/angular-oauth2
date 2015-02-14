@@ -149,7 +149,7 @@ OAuth.revokeToken()
 Configuration defaults:
 
 ```js
-OAuthProvider.configure({
+OAuthTokenProvider.configure({
   name: 'token',
   options: {
     secure: true
