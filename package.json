@@ -3,9 +3,6 @@
   "version": "2.0.0",
   "description": "Angular OAuth2",
   "main": "./dist/angular-oauth2.js",
-  "scripts": {
-    "postinstall": "./node_modules/bower/bin/bower install"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/seegno/angular-oauth2.git"
