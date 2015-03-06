@@ -14,16 +14,24 @@ Choose your preferred method:
 
 ## Usage
 
-1. Include `angular-oauth2` and dependencies.
+###### 1. Download `angular-oauth2` dependencies.
+
+* [angular](https://github.com/angular/angular.js)
+* [angular-cookie](https://github.com/ivpusic/angular-cookie)
+* [query-string](https://github.com/sindresorhus/query-string)
+
+If you're using `bower` they will be automatically downloaded upon installing this library.
+
+###### 2. Include `angular-oauth2` and dependencies.
 
 ```html
-<script src="bower_components/angular/angular.min.js"></script>
-<script src="bower_components/angular-cookie/dist/angular-cookie.min.js"></script>
-<script src="bower_components/query-string/query-string.min.js"></script>
-<script src="bower_components/angular-oauth2/dist/angular-oauth2.min.js"></script>
+<script src="<VENDOR_FOLDER>/angular/angular.min.js"></script>
+<script src="<VENDOR_FOLDER>/angular-cookie/dist/angular-cookie.min.js"></script>
+<script src="<VENDOR_FOLDER>/query-string/query-string.min.js"></script>
+<script src="<VENDOR_FOLDER>/angular-oauth2/dist/angular-oauth2.min.js"></script>
 ```
 
-2. Configure `OAuth` (required) and `OAuthToken` (optional):
+###### 3. Configure `OAuth` (required) and `OAuthToken` (optional):
 
 ```js
 angular.module('myApp', ['angular-oauth2'])
@@ -36,7 +44,7 @@ angular.module('myApp', ['angular-oauth2'])
   }]);
 ```
 
-3. Catch `OAuth` errors and do something with them (optional):
+###### 4. Catch `OAuth` errors and do something with them (optional):
 
 ```js
 angular.module('myApp', ['angular-oauth2'])
@@ -57,12 +65,6 @@ angular.module('myApp', ['angular-oauth2'])
     });
   }]);
 ```
-
-Dependencies:
-
-* [angular](https://github.com/angular/angular.js)
-* [angular-cookie](https://github.com/ivpusic/angular-cookie)
-* [query-string](https://github.com/sindresorhus/query-string)
 
 ## API
 
@@ -169,10 +171,11 @@ It will be awesome if you can help us evolve `angular-oauth2`. Want to help?
 
 1. [Fork it](https://github.com/seegno/angular-oauth2).
 2. `npm install`.
-3. Do your magic.
-4. Run the tests: `gulp test`.
-5. Build: `gulp build`
-6. Create a [Pull Request](https://github.com/seegno/angular-oauth2/compare).
+3. `bower install`
+4. Do your magic.
+5. Run the tests: `gulp test`.
+6. Build: `gulp build`
+7. Create a [Pull Request](https://github.com/seegno/angular-oauth2/compare).
 
 *The source files are written in ES6.*
 
