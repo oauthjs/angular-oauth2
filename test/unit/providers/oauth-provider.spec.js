@@ -7,9 +7,9 @@ describe('OAuthProvider', function() {
   var defaults = {
     baseUrl: 'https://api.website.com',
     clientId: 'CLIENT_ID',
-    clientSecret: 'CLIENT_SECRET',
     grantPath: '/oauth2/token',
-    revokePath: '/oauth2/revoke'
+    revokePath: '/oauth2/revoke',
+    clientSecret: 'CLIENT_SECRET'
   };
 
   describe('configure()', function() {
@@ -70,15 +70,10 @@ describe('OAuthProvider', function() {
       }
     });
 
-    it('should throw an error if `clientSecret` param is empty', function() {
-      try {
-        provider.configure(_.omit(defaults, 'clientSecret'));
+    it('should not throw an error if `clientSecret` param is empty', function() {
+      var config = provider.configure(_.omit(defaults, 'clientSecret'));
 
-        should.fail();
-      } catch(e) {
-        e.should.be.an.instanceOf(Error);
-        e.message.should.match(/clientSecret/);
-      }
+      (null === config.clientSecret).should.true;
     });
 
     it('should throw an error if `grantPath` param is empty', function() {
@@ -157,10 +152,10 @@ describe('OAuthProvider', function() {
     describe('getAccessToken()', function() {
       var data = queryString.stringify({
         client_id: defaults.clientId,
-        client_secret: defaults.clientSecret,
         grant_type: 'password',
         username: 'foo',
-        password: 'bar'
+        password: 'bar',
+        client_secret: defaults.clientSecret
       });
 
       it('should throw an error if `user` is missing', inject(function(OAuth) {
@@ -223,10 +218,10 @@ describe('OAuthProvider', function() {
         queryString.stringify.firstCall.args.should.have.lengthOf(1);
         queryString.stringify.firstCall.args[0].should.eql({
           client_id: defaults.clientId,
-          client_secret: defaults.clientSecret,
           grant_type: 'password',
           username: 'foo',
-          password: 'bar'
+          password: 'bar',
+          client_secret: defaults.clientSecret
         });
         queryString.stringify.restore();
       }));
@@ -274,9 +269,9 @@ describe('OAuthProvider', function() {
     describe('refreshToken()', function() {
       var data = {
         client_id: defaults.clientId,
-        client_secret: defaults.clientSecret,
         grant_type: 'refresh_token',
         refresh_token: 'bar',
+        client_secret: defaults.clientSecret
       };
 
       it('should call `queryString.stringify`', inject(function(OAuth, OAuthToken) {
@@ -290,9 +285,9 @@ describe('OAuthProvider', function() {
         queryString.stringify.firstCall.args.should.have.lengthOf(1);
         queryString.stringify.firstCall.args[0].should.eql({
           client_id: defaults.clientId,
-          client_secret: defaults.clientSecret,
           grant_type: 'refresh_token',
           refresh_token: 'bar',
+          client_secret: defaults.clientSecret
         });
         queryString.stringify.restore();
       }));

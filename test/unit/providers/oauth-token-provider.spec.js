@@ -36,8 +36,7 @@ describe('OAuthTokenProvider', function() {
         .config(function(OAuthProvider) {
           OAuthProvider.configure({
             baseUrl: 'https://api.website.com',
-            clientId: 'CLIENT_ID',
-            clientSecret: 'CLIENT_SECRET'
+            clientId: 'CLIENT_ID'
           });
         });
 
