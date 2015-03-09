@@ -1,6 +1,6 @@
 /**
  * angular-oauth2 - Angular OAuth2
- * @version v1.0.2
+ * @version v2.1.0
  * @link https://github.com/seegno/angular-oauth2
  * @license MIT
  */
@@ -51,6 +51,7 @@
         grantPath: "/oauth2/token",
         revokePath: "/oauth2/revoke"
     };
+    var requiredKeys = [ "baseUrl", "clientId", "grantPath", "revokePath" ];
     function OAuthProvider() {
         var config;
         this.configure = function(params) {
@@ -61,8 +62,8 @@
                 throw new TypeError("Invalid argument: `config` must be an `Object`.");
             }
             config = angular.extend({}, defaults, params);
-            angular.forEach(config, function(value, key) {
-                if (!value) {
+            angular.forEach(requiredKeys, function(key) {
+                if (!config[key]) {
                     throw new Error("Missing parameter: " + key + ".");
                 }
             });
@@ -98,13 +99,16 @@
                             if (!user || !user.username || !user.password) {
                                 throw new Error("`user` must be an object with `username` and `password` properties.");
                             }
-                            var data = queryString.stringify({
+                            var data = {
                                 client_id: config.clientId,
-                                client_secret: config.clientSecret,
                                 grant_type: "password",
                                 username: user.username,
                                 password: user.password
-                            });
+                            };
+                            if (null !== config.clientSecret) {
+                                data.client_secret = config.clientSecret;
+                            }
+                            data = queryString.stringify(data);
                             options = angular.extend({
                                 headers: {
                                     "Content-Type": "application/x-www-form-urlencoded"
@@ -121,12 +125,15 @@
                     },
                     getRefreshToken: {
                         value: function getRefreshToken() {
-                            var data = queryString.stringify({
+                            var data = {
                                 client_id: config.clientId,
-                                client_secret: config.clientSecret,
                                 grant_type: "refresh_token",
                                 refresh_token: OAuthToken.getRefreshToken()
-                            });
+                            };
+                            if (null !== config.clientSecret) {
+                                data.client_secret = config.clientSecret;
+                            }
+                            data = queryString.stringify(data);
                             var options = {
                                 headers: {
                                     "Content-Type": "application/x-www-form-urlencoded"
