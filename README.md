@@ -1,4 +1,4 @@
-# angular-oauth2
+# angular-oauth2 [![Build Status](https://travis-ci.org/seegno/angular-oauth2.svg)](https://travis-ci.org/seegno/angular-oauth2)
 
 AngularJS OAuth2 authentication module written in ES6.
 
