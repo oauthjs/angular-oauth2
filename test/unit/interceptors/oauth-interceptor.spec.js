@@ -24,7 +24,7 @@ describe('oauthInterceptor', function() {
   }));
 
   it('should inject `Authorization` header if `token` exists', inject(function($http, $httpBackend, OAuthToken) {
-    OAuthToken.token = { token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' };
+    OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
 
     $httpBackend.expectGET('https://website.com', function(headers) {
       headers.should.have.property('Authorization');

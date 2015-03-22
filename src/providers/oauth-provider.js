@@ -100,7 +100,7 @@ function OAuthProvider() {
        */
 
       isAuthenticated() {
-        return !!OAuthToken.token;
+        return !!OAuthToken.getToken();
       }
 
       /**
@@ -136,7 +136,7 @@ function OAuthProvider() {
         }, options);
 
         return $http.post(`${config.baseUrl}${config.grantPath}`, data, options).then((response) => {
-          OAuthToken.token = response.data;
+          OAuthToken.setToken(response.data);
 
           return response;
         });
@@ -167,7 +167,7 @@ function OAuthProvider() {
         };
 
         return $http.post(`${config.baseUrl}${config.grantPath}`, data, options).then((response) => {
-          OAuthToken.token = response.data;
+          OAuthToken.setToken(response.data);
 
           return response;
         });

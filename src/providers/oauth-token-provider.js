@@ -48,7 +48,7 @@ function OAuthTokenProvider() {
        * Set token.
        */
 
-      set token(data) {
+      setToken(data) {
         return ipCookie(config.name, data, config.options);
       }
 
@@ -56,7 +56,7 @@ function OAuthTokenProvider() {
        * Get token.
        */
 
-      get token() {
+      getToken() {
         return ipCookie(config.name);
       }
 
@@ -65,7 +65,7 @@ function OAuthTokenProvider() {
        */
 
       getAccessToken() {
-        return this.token ? this.token.access_token : undefined;
+        return this.getToken() ? this.getToken().access_token : undefined;
       }
 
       /**
@@ -85,7 +85,7 @@ function OAuthTokenProvider() {
        */
 
       getRefreshToken() {
-        return this.token ? this.token.refresh_token : undefined;
+        return this.getToken() ? this.getToken().refresh_token : undefined;
       }
 
       /**
@@ -93,7 +93,7 @@ function OAuthTokenProvider() {
        */
 
       getTokenType() {
-        return this.token ? this.token.token_type : undefined;
+        return this.getToken() ? this.getToken().token_type : undefined;
       }
 
       /**
