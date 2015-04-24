@@ -179,8 +179,10 @@
         if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
     };
     function OAuthTokenProvider() {
+        var storage;
         var config = {
             name: "token",
+            storage: "cookies",
             options: {
                 secure: true
             }
@@ -198,10 +200,10 @@
                 _prototypeProperties(OAuthToken, null, {
                     token: {
                         set: function(data) {
-                            return ipCookie(config.name, data, config.options);
+                            return setToken(data);
                         },
                         get: function() {
-                            return ipCookie(config.name);
+                            return getToken();
                         },
                         enumerable: true,
                         configurable: true
@@ -242,9 +244,17 @@
                         configurable: true
                     },
                     removeToken: {
-                        value: function removeToken() {
-                            return ipCookie.remove(config.name, config.options);
-                        },
+                        value: function(_removeToken) {
+                            var _removeTokenWrapper = function removeToken() {
+                                return _removeToken.apply(this, arguments);
+                            };
+                            _removeTokenWrapper.toString = function() {
+                                return _removeToken.toString();
+                            };
+                            return _removeTokenWrapper;
+                        }(function() {
+                            return removeToken();
+                        }),
                         writable: true,
                         enumerable: true,
                         configurable: true
@@ -252,6 +262,54 @@
                 });
                 return OAuthToken;
             }();
+            var setToken = function(data) {
+                storage = config.storage.toLowerCase();
+                switch (storage) {
+                  case "cookies":
+                    return ipCookie(config.name, data, config.options);
+
+                  case "localstorage":
+                    return localStorage.setItem(config.name, JSON.stringify(data));
+
+                  case "sessionstorage":
+                    return sessionStorage.setItem(config.name, JSON.stringify(data));
+
+                  default:
+                    return ipCookie(config.name, data, config.options);
+                }
+            };
+            var getToken = function() {
+                storage = config.storage.toLowerCase();
+                switch (storage) {
+                  case "cookies":
+                    return ipCookie(config.name);
+
+                  case "localstorage":
+                    return JSON.parse(localStorage.getItem(config.name));
+
+                  case "sessionstorage":
+                    return JSON.parse(sessionStorage.getItem(config.name));
+
+                  default:
+                    return ipCookie(config.name);
+                }
+            };
+            var removeToken = function() {
+                storage = config.storage.toLowerCase();
+                switch (storage) {
+                  case "cookies":
+                    return ipCookie.remove(config.name, config.options);
+
+                  case "localstorage":
+                    return localStorage.removeItem(config.name);
+
+                  case "sessionstorage":
+                    return sessionStorage.removeItem(config.name);
+
+                  default:
+                    return ipCookie.remove(config.name, config.options);
+                }
+            };
             return new OAuthToken();
         };
         this.$get.$inject = [ "ipCookie" ];
