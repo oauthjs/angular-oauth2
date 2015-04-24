@@ -153,6 +153,7 @@ Configuration defaults:
 ```js
 OAuthTokenProvider.configure({
   name: 'token',
+  storage:'cookies' // options: 'cookies','localstorage','sessionstorage'
   options: {
     secure: true
   }
