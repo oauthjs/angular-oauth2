@@ -243,7 +243,7 @@
                     },
                     removeToken: {
                         value: function removeToken() {
-                            return ipCookie.remove(config.name, config.options);
+                            return ipCookie.remove(config.name, angular.copy(config.options));
                         },
                         writable: true,
                         enumerable: true,
