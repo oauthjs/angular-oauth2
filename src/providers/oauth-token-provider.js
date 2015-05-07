@@ -101,7 +101,7 @@ function OAuthTokenProvider() {
        */
 
       removeToken() {
-        return ipCookie.remove(config.name, config.options);
+        return ipCookie.remove(config.name, angular.copy(config.options));
       }
     }
 
