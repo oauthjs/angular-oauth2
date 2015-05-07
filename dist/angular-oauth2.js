@@ -1,6 +1,6 @@
 /**
  * angular-oauth2 - Angular OAuth2
- * @version v2.1.0
+ * @version v2.1.1
  * @link https://github.com/seegno/angular-oauth2
  * @license MIT
  */
@@ -243,7 +243,7 @@
                     },
                     removeToken: {
                         value: function removeToken() {
-                            return ipCookie.remove(config.name, config.options);
+                            return ipCookie.remove(config.name, angular.copy(config.options));
                         },
                         writable: true,
                         enumerable: true,
