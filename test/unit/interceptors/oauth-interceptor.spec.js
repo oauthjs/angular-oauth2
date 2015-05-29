@@ -110,4 +110,21 @@ describe('oauthInterceptor', function() {
     $rootScope.$emit.firstCall.args[1].should.have.property('data', { error: 'invalid_token' });
     $rootScope.$emit.restore();
   }));
+
+  it('should emit `oauth:error` event if an `unauthorized` error occurs', inject(function($http, $httpBackend, $rootScope) {
+    sinon.spy($rootScope, '$emit');
+
+    $httpBackend.expectGET('https://website.com').respond(401, null, { 'www-authenticate': 'Bearer realm="example"' });
+
+    $http.get('https://website.com');
+
+    $httpBackend.flush();
+
+    $rootScope.$emit.callCount.should.equal(1);
+    $rootScope.$emit.firstCall.args[0].should.eql('oauth:error');
+    $rootScope.$emit.firstCall.args[1].should.have.property('status', 401);
+    $rootScope.$emit.firstCall.args[1].should.have.property('headers');
+    $rootScope.$emit.firstCall.args[1].headers('www-authenticate').should.equal('Bearer realm="example"');
+    $rootScope.$emit.restore();
+  }));
 });
