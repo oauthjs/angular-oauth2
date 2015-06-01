@@ -43,7 +43,7 @@ describe('OAuthTokenProvider', function() {
       angular.mock.module('angular-oauth2', 'angular-oauth2.test');
 
       angular.mock.inject(function(OAuthToken) {
-        OAuthToken.token = { token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' };
+        OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
       });
 
     });
@@ -65,9 +65,9 @@ describe('OAuthTokenProvider', function() {
     }));
 
     it('setToken()', inject(function(OAuthToken) {
-      OAuthToken.token = { token_type: 'bearer', access_token: 'qux', expires_in: 3600, refresh_token: 'biz' };
+      OAuthToken.setToken({ token_type: 'bearer', access_token: 'qux', expires_in: 3600, refresh_token: 'biz' });
 
-      OAuthToken.token.should.eql({
+      OAuthToken.getToken().should.eql({
         token_type: 'bearer',
         access_token: 'qux',
         expires_in: 3600,
@@ -76,7 +76,7 @@ describe('OAuthTokenProvider', function() {
     }));
 
     it('getToken()', inject(function(OAuthToken) {
-      OAuthToken.token.should.eql({
+      OAuthToken.getToken().should.eql({
         token_type: 'bearer',
         access_token: 'foo',
         expires_in: 3600,
@@ -91,7 +91,7 @@ describe('OAuthTokenProvider', function() {
     it('removeToken()', inject(function(OAuthToken) {
       OAuthToken.removeToken();
 
-      (undefined === OAuthToken.token).should.true;
+      (undefined === OAuthToken.getToken()).should.true;
     }));
   });
 });

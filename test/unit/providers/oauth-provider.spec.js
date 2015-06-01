@@ -139,7 +139,7 @@ describe('OAuthProvider', function() {
 
     describe('isAuthenticated()', function() {
       it('should be true when there is a stored `token` cookie', inject(function(OAuth, OAuthToken) {
-        OAuthToken.token = { token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' };
+        OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
 
         OAuth.isAuthenticated().should.be.true;
       }));
@@ -254,7 +254,7 @@ describe('OAuthProvider', function() {
           username: 'foo',
           password: 'bar'
         }).then(function(response) {
-          OAuthToken.token.should.eql(response.data);
+          OAuthToken.getToken().should.eql(response.data);
         }).catch(function() {
           should.fail();
         });
@@ -277,7 +277,7 @@ describe('OAuthProvider', function() {
       it('should call `queryString.stringify`', inject(function(OAuth, OAuthToken) {
         sinon.spy(queryString, 'stringify');
 
-        OAuthToken.token = { token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' };
+        OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
 
         OAuth.getRefreshToken();
 
@@ -310,7 +310,7 @@ describe('OAuthProvider', function() {
       }));
 
       it('should return an error if `refresh_token` is invalid', inject(function($httpBackend, OAuth, OAuthToken) {
-        OAuthToken.token = { token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' };
+        OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
 
         $httpBackend.expectPOST(defaults.baseUrl + defaults.grantPath, queryString.stringify(data))
           .respond(400, { error: 'invalid_grant' });
@@ -329,7 +329,7 @@ describe('OAuthProvider', function() {
       }));
 
       it('should retrieve and store `refresh_token` if request is successful', inject(function($httpBackend, OAuth, OAuthToken) {
-        OAuthToken.token = { token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' };
+        OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
 
         $httpBackend.expectPOST(defaults.baseUrl + defaults.grantPath, queryString.stringify(data))
           .respond({ token_type: 'bearer', access_token: 'qux', expires_in: 3600, refresh_token: 'biz' });
@@ -356,7 +356,7 @@ describe('OAuthProvider', function() {
       it('should call `queryString.stringify`', inject(function(OAuth, OAuthToken) {
         sinon.spy(queryString, 'stringify');
 
-        OAuthToken.token = { token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' };
+        OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
 
         OAuth.revokeToken();
 
@@ -371,7 +371,7 @@ describe('OAuthProvider', function() {
       it('should call `queryString.stringify` with `access_token` if `refresh_token` is not available', inject(function(OAuth, OAuthToken) {
         sinon.spy(queryString, 'stringify');
 
-        OAuthToken.token = { token_type: 'bearer', access_token: 'foo', expires_in: 3600 };
+        OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600 });
 
         OAuth.revokeToken();
 
@@ -404,7 +404,7 @@ describe('OAuthProvider', function() {
       }));
 
       it('should revoke and remove `token` if request is successful', inject(function($httpBackend, OAuth, OAuthToken) {
-        OAuthToken.token = { token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' };
+        OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
 
         var data = queryString.stringify({
           token: 'bar'
@@ -414,7 +414,7 @@ describe('OAuthProvider', function() {
           .respond(200);
 
         OAuth.revokeToken().then(function() {
-          (undefined === OAuthToken.token).should.be.true;
+          (undefined === OAuthToken.getToken()).should.be.true;
         }).catch(function() {
           should.fail();
         });
