@@ -17,7 +17,7 @@ Choose your preferred method:
 ###### 1. Download `angular-oauth2` dependencies.
 
 * [angular](https://github.com/angular/angular.js)
-* [angular-cookie](https://github.com/ivpusic/angular-cookie)
+* [angular-cookies](https://github.com/angular/bower-angular-cookies)
 * [query-string](https://github.com/sindresorhus/query-string)
 
 If you're using `bower` they will be automatically downloaded upon installing this library.
@@ -26,7 +26,7 @@ If you're using `bower` they will be automatically downloaded upon installing th
 
 ```html
 <script src="<VENDOR_FOLDER>/angular/angular.min.js"></script>
-<script src="<VENDOR_FOLDER>/angular-cookie/dist/angular-cookie.min.js"></script>
+<script src="<VENDOR_FOLDER>/angular-cookies/angular-cookies.min.js"></script>
 <script src="<VENDOR_FOLDER>/query-string/query-string.min.js"></script>
 <script src="<VENDOR_FOLDER>/angular-oauth2/dist/angular-oauth2.min.js"></script>
 ```
@@ -146,7 +146,8 @@ OAuth.revokeToken()
 
 #### OAuthTokenProvider
 
-`OAuthTokenProvider` uses [angular-cookie](https://github.com/ivpusic/angular-cookie) to store the cookies. Check the [available options](https://github.com/ivpusic/angular-cookie#options).
+`OAuthTokenProvider` uses [angular-cookies](https://github.com/angular/bower-angular-cookies) to store the cookies. Check the [available options](https://code.angularjs.org/1.4.0/docs/api/ngCookies/service/$cookies).
+**BREAKING CHANGE**: `angular-oauth2` requires angular 1.4 or above in order to store cookies with additional options.
 
 Configuration defaults:
 

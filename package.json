@@ -47,7 +47,7 @@
   },
   "browser": {
     "angular": "./bower_components/angular/angular.js",
-    "angular-cookie": "./bower_components/angular-cookie/angular-cookie.js",
+    "angular-cookies": "./bower_components/angular-cookies/angular-cookies.js",
     "query-string": "./bower_components/query-string/query-string.js"
   },
   "browserify-shim": {
