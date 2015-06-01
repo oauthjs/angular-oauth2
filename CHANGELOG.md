@@ -1,6 +1,10 @@
 ## Changelog
 
+### 3.0.1 / 2015-06-01
+- [#27](https://github.com/seegno/angular-oauth2/pull/27) Add travis-ci configuration (@joaogranado)
+
 ### 3.0.0 / 2015-06-01
+- [#49](https://github.com/seegno/angular-oauth2/pull/49) Add changelog task (@ruipenso)
 - [#48](https://github.com/seegno/angular-oauth2/pull/48) Update readme (@ruipenso)
 - [#25](https://github.com/seegno/angular-oauth2/pull/25) Replace ipCookie with ngCookies (@joaogranado)
 - [#28](https://github.com/seegno/angular-oauth2/pull/28) Add methods to get/set `token` property (@joaogranado)

@@ -1,11 +1,8 @@
 {
   "name": "angular-oauth2",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Angular OAuth2",
   "main": "./dist/angular-oauth2.js",
-  "scripts": {
-    "changelog": "./node_modules/.bin/github-changes -o seegno -r angular-oauth2 -a --only-pulls --use-commit-body --title 'Changelog' --date-format '/ YYYY-MM-DD'"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/seegno/angular-oauth2.git"
@@ -57,6 +54,7 @@
     "query-string": "./bower_components/query-string/query-string.js"
   },
   "scripts": {
+    "changelog": "./node_modules/.bin/github-changes -o seegno -r angular-oauth2 -a --only-pulls --use-commit-body --title 'Changelog' --date-format '/ YYYY-MM-DD'",
     "test": "./node_modules/.bin/gulp test --browsers Firefox"
   },
   "browserify-shim": {
