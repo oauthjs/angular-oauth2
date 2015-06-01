@@ -1,12 +1,18 @@
 
 /**
+ * Module dependencies.
+ */
+
+var argv = require('yargs').argv;
+
+/**
  * Karma.
  */
 
 module.exports = function(config) {
   config.set({
     basePath: './',
-    browsers: ['Chrome'],
+    browsers: [argv.browsers || 'Chrome'],
     files: [
       'bower_components/angular/angular.js',
       'bower_components/angular-cookies/angular-cookies.js',
@@ -26,6 +32,7 @@ module.exports = function(config) {
     plugins: [
       'karma-browserify',
       'karma-chrome-launcher',
+      'karma-firefox-launcher',
       'karma-mocha',
       'karma-mocha-reporter',
       'karma-should',
