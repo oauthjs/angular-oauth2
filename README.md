@@ -143,11 +143,11 @@ OAuth.revokeToken()
 * `{ status: 400, data: { error: 'invalid_request' }`
 * `{ status: 400, data: { error: 'invalid_grant' }`
 * `{ status: 401, data: { error: 'invalid_token' }`
+* `{ status: 401, headers: { 'www-authenticate': 'Bearer realm="example"' } }`
 
 #### OAuthTokenProvider
 
 `OAuthTokenProvider` uses [angular-cookies](https://github.com/angular/bower-angular-cookies) to store the cookies. Check the [available options](https://code.angularjs.org/1.4.0/docs/api/ngCookies/service/$cookies).
-**BREAKING CHANGE**: `angular-oauth2` requires angular 1.4 or above in order to store cookies with additional options.
 
 Configuration defaults:
 
@@ -159,6 +159,11 @@ OAuthTokenProvider.configure({
   }
 });
 ```
+
+#### OAuthToken
+
+If you want to manage the `token` yourself you can use `OAuthToken` service.
+Please check the [OAuthToken](https://github.com/seegno/angular-oauth2/blob/master/src/providers/oauth-token-provider.js#L45) source code to see all the available methods.
 
 ## Contributing & Development
 
