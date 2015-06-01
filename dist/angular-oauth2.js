@@ -1,6 +1,6 @@
 /**
  * angular-oauth2 - Angular OAuth2
- * @version v2.1.1
+ * @version v3.0.0
  * @link https://github.com/seegno/angular-oauth2
  * @license MIT
  */
@@ -13,7 +13,7 @@
         root.angularOAuth2 = factory(root.angular, root.queryString);
     }
 })(this, function(angular, queryString) {
-    var ngModule = angular.module("angular-oauth2", [ "ipCookie" ]).config(oauthConfig).factory("oauthInterceptor", oauthInterceptor).provider("OAuth", OAuthProvider).provider("OAuthToken", OAuthTokenProvider);
+    var ngModule = angular.module("angular-oauth2", [ "ngCookies" ]).config(oauthConfig).factory("oauthInterceptor", oauthInterceptor).provider("OAuth", OAuthProvider).provider("OAuthToken", OAuthTokenProvider);
     function oauthConfig($httpProvider) {
         $httpProvider.interceptors.push("oauthInterceptor");
     }
@@ -32,7 +32,7 @@
                     OAuthToken.removeToken();
                     $rootScope.$emit("oauth:error", rejection);
                 }
-                if (401 === rejection.status && rejection.data && "invalid_token" === rejection.data.error) {
+                if (401 === rejection.status && (rejection.data && "invalid_token" === rejection.data.error) || rejection.headers("www-authenticate") && 0 === rejection.headers("www-authenticate").indexOf("Bearer")) {
                     $rootScope.$emit("oauth:error", rejection);
                 }
                 return $q.reject(rejection);
@@ -88,7 +88,7 @@
                 _prototypeProperties(OAuth, null, {
                     isAuthenticated: {
                         value: function isAuthenticated() {
-                            return !!OAuthToken.token;
+                            return !!OAuthToken.getToken();
                         },
                         writable: true,
                         enumerable: true,
@@ -115,7 +115,7 @@
                                 }
                             }, options);
                             return $http.post("" + config.baseUrl + "" + config.grantPath, data, options).then(function(response) {
-                                OAuthToken.token = response.data;
+                                OAuthToken.setToken(response.data);
                                 return response;
                             });
                         },
@@ -140,7 +140,7 @@
                                 }
                             };
                             return $http.post("" + config.baseUrl + "" + config.grantPath, data, options).then(function(response) {
-                                OAuthToken.token = response.data;
+                                OAuthToken.setToken(response.data);
                                 return response;
                             });
                         },
@@ -192,23 +192,29 @@
             angular.extend(config, params);
             return config;
         };
-        this.$get = function(ipCookie) {
+        this.$get = function($cookies) {
             var OAuthToken = function() {
                 function OAuthToken() {}
                 _prototypeProperties(OAuthToken, null, {
-                    token: {
-                        set: function(data) {
-                            return ipCookie(config.name, data, config.options);
+                    setToken: {
+                        value: function setToken(data) {
+                            return $cookies.putObject(config.name, data, config.options);
                         },
-                        get: function() {
-                            return ipCookie(config.name);
+                        writable: true,
+                        enumerable: true,
+                        configurable: true
+                    },
+                    getToken: {
+                        value: function getToken() {
+                            return $cookies.getObject(config.name);
                         },
+                        writable: true,
                         enumerable: true,
                         configurable: true
                     },
                     getAccessToken: {
                         value: function getAccessToken() {
-                            return this.token ? this.token.access_token : undefined;
+                            return this.getToken() ? this.getToken().access_token : undefined;
                         },
                         writable: true,
                         enumerable: true,
@@ -227,7 +233,7 @@
                     },
                     getRefreshToken: {
                         value: function getRefreshToken() {
-                            return this.token ? this.token.refresh_token : undefined;
+                            return this.getToken() ? this.getToken().refresh_token : undefined;
                         },
                         writable: true,
                         enumerable: true,
@@ -235,7 +241,7 @@
                     },
                     getTokenType: {
                         value: function getTokenType() {
-                            return this.token ? this.token.token_type : undefined;
+                            return this.getToken() ? this.getToken().token_type : undefined;
                         },
                         writable: true,
                         enumerable: true,
@@ -243,7 +249,7 @@
                     },
                     removeToken: {
                         value: function removeToken() {
-                            return ipCookie.remove(config.name, angular.copy(config.options));
+                            return $cookies.remove(config.name, config.options);
                         },
                         writable: true,
                         enumerable: true,
@@ -254,7 +260,7 @@
             }();
             return new OAuthToken();
         };
-        this.$get.$inject = [ "ipCookie" ];
+        this.$get.$inject = [ "$cookies" ];
     }
     return ngModule;
 });
