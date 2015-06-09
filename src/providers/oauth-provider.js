@@ -112,12 +112,17 @@ function OAuthProvider() {
        * @return {promise} A response promise.
        */
 
-      getAccessToken(user, options) {
+      getAccessToken(user, options, post_config) {
         // Check if `user` has required properties.
         if (!user || !user.username || !user.password) {
           throw new Error('`user` must be an object with `username` and `password` properties.');
         }
-
+        if (null !== post_config.client_id){
+          config.client_id = post_config.client_id;
+        }
+        if (null !== post_config.client_secret){
+          config.client_secret = post_config.client_secret;
+        }
         var data = {
           client_id: config.clientId,
           grant_type: 'password',
