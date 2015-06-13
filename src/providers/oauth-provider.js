@@ -118,10 +118,10 @@ function OAuthProvider() {
           throw new Error('`user` must be an object with `username` and `password` properties.');
         }
         if (post_config && null !== post_config.client_id){
-          config.client_id = post_config.client_id;
+          config.clientId = post_config.client_id;
         }
         if (post_config && null !== post_config.client_secret){
-          config.client_secret = post_config.client_secret;
+          config.clientSecret = post_config.client_secret;
         }
         var data = {
           client_id: config.clientId,
