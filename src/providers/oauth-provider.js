@@ -11,6 +11,7 @@ var defaults = {
   clientId: null,
   clientSecret: null,
   grantPath: '/oauth2/token',
+  grantType: 'password',
   revokePath: '/oauth2/revoke'
 };
 
@@ -18,6 +19,7 @@ var requiredKeys = [
   'baseUrl',
   'clientId',
   'grantPath',
+  'grantType',
   'revokePath'
 ];
 
@@ -120,7 +122,7 @@ function OAuthProvider() {
 
         var data = {
           client_id: config.clientId,
-          grant_type: 'password',
+          grant_type: config.grantType,
           username: user.username,
           password: user.password
         };
