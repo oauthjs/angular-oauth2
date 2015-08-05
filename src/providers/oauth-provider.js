@@ -19,6 +19,7 @@ var requiredKeys = [
   'baseUrl',
   'clientId',
   'grantPath',
+  'grantType',
   'revokePath'
 ];
 
