@@ -14,7 +14,8 @@ function OAuthTokenProvider() {
     name: 'token',
     options: {
       secure: true
-    }
+    },
+    storage: 'cookie'
   };
 
   /**
@@ -41,15 +42,74 @@ function OAuthTokenProvider() {
    * @ngInject
    */
 
-  this.$get = function($cookies) {
+  this.$get = ['$cookies', '$log', '$window', function($cookies, $log, $window) {
+    var storage;
+    var storageType = (config.storage || '').toLowerCase();
+    if ('local' === storageType) {
+      storage = $window.localStorage;
+    }
+    else if ('session' === storageType) {
+      storage = $window.sessionStorage;
+    }
+    else {
+      $log.warn(`Defaulting to cookie storage because storage type is unknown: ${storageType}`);
+    }
+
+    class BrowserStorage {
+      constructor(storage, key) {
+        this.storage = storage;
+        this.key = key;
+      }
+
+      set token(x) {
+        this.storage.setItem(this.key, x);
+      }
+
+      get token() {
+        var value = this.storage.getItem(this.key);
+        return value ? angular.fromJson(value) : value;
+      }
+
+      deleteToken() {
+        this.storage.removeItem(this.key);
+      }
+    }
+
+    class CookieStorage {
+      constructor($cookies, key, opts) {
+        this.$cookies = $cookies;
+        this.key = key;
+        this.opts = opts;
+      }
+
+      set token(x) {
+        this.$cookies.putObject(this.key, x, this.opts);
+      }
+
+      get token() {
+        return this.$cookies.getObject(this.key);
+      }
+
+      deleteToken() {
+        this.$cookies.remove(this.key, this.opts);
+      }
+    }
+
     class OAuthToken {
+      /**
+       * Constructor
+       */
+
+      constructor(storage) {
+        this.storage = storage;
+      }
 
       /**
        * Set token.
        */
 
       setToken(data) {
-        return $cookies.putObject(config.name, data, config.options);
+        this.storage.token = data;
       }
 
       /**
@@ -57,7 +117,7 @@ function OAuthTokenProvider() {
        */
 
       getToken() {
-        return $cookies.getObject(config.name);
+        return this.storage.token;
       }
 
       /**
@@ -101,12 +161,16 @@ function OAuthTokenProvider() {
        */
 
       removeToken() {
-        return $cookies.remove(config.name, config.options);
+        return this.storage.deleteToken();
       }
     }
 
-    return new OAuthToken();
-  };
+    storage = storage ?
+      new BrowserStorage(storage, config.name) :
+      new CookieStorage($cookies, config.name, config.options);
+
+    return new OAuthToken(storage);
+  }];
 }
 
 /**
