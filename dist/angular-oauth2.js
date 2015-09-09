@@ -301,10 +301,10 @@
                     return ipCookie.remove(config.name, config.options);
 
                   case "localstorage":
-                    return localStorage.removeItem(config.name);
+                    return $window.localStorage.removeItem(config.name);
 
                   case "sessionstorage":
-                    return sessionStorage.removeItem(config.name);
+                    return $window.sessionStorage.removeItem(config.name);
 
                   default:
                     return ipCookie.remove(config.name, config.options);
