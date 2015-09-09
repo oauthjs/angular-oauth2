@@ -43,7 +43,7 @@ function OAuthTokenProvider() {
    * @ngInject
    */
 
-  this.$get = function(ipCookie) {
+  this.$get = function(ipCookie, $window) {
     class OAuthToken {
 
       /**
@@ -121,9 +121,9 @@ function OAuthTokenProvider() {
        case 'cookies':
         return ipCookie(config.name, data, config.options);
        case 'localstorage':
-        return localStorage.setItem(config.name, angular.toJson(data));
+        return $window.localStorage.setItem(config.name, angular.toJson(data));
        case 'sessionstorage':
-        return localStorage.setItem(config.name, angular.toJson(data));
+        return $window.sessionStorage.setItem(config.name, angular.toJson(data));
        default :
         return ipCookie(config.name, data, config.options);
       }
@@ -140,9 +140,9 @@ function OAuthTokenProvider() {
        case 'cookies':
         return ipCookie(config.name);
        case 'localstorage':
-        return angular.fromJson(localStorage.getItem(config.name));
+        return angular.fromJson($window.localStorage.getItem(config.name));
        case 'sessionstorage':
-        return angular.fromJson(sessionStorage.getItem(config.name));
+        return angular.fromJson($window.sessionStorage.getItem(config.name));
        default :
         return ipCookie(config.name);
       }

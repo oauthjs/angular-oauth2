@@ -14,6 +14,10 @@
     }
 })(this, function(angular, queryString) {
     var ngModule = angular.module("angular-oauth2", [ "ipCookie" ]).config(oauthConfig).factory("oauthInterceptor", oauthInterceptor).provider("OAuth", OAuthProvider).provider("OAuthToken", OAuthTokenProvider);
+    function oauthConfig($httpProvider) {
+        $httpProvider.interceptors.push("oauthInterceptor");
+    }
+    oauthConfig.$inject = [ "$httpProvider" ];
     function oauthInterceptor($q, $rootScope, OAuthToken) {
         return {
             request: function(config) {
@@ -36,10 +40,6 @@
         };
     }
     oauthInterceptor.$inject = [ "$q", "$rootScope", "OAuthToken" ];
-    function oauthConfig($httpProvider) {
-        $httpProvider.interceptors.push("oauthInterceptor");
-    }
-    oauthConfig.$inject = [ "$httpProvider" ];
     var _prototypeProperties = function(child, staticProps, instanceProps) {
         if (staticProps) Object.defineProperties(child, staticProps);
         if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
@@ -194,7 +194,7 @@
             angular.extend(config, params);
             return config;
         };
-        this.$get = function(ipCookie) {
+        this.$get = function(ipCookie, $window) {
             var OAuthToken = function() {
                 function OAuthToken() {}
                 _prototypeProperties(OAuthToken, null, {
@@ -269,10 +269,10 @@
                     return ipCookie(config.name, data, config.options);
 
                   case "localstorage":
-                    return localStorage.setItem(config.name, angular.toJson(data));
+                    return $window.localStorage.setItem(config.name, angular.toJson(data));
 
                   case "sessionstorage":
-                    return localStorage.setItem(config.name, angular.toJson(data));
+                    return $window.sessionStorage.setItem(config.name, angular.toJson(data));
 
                   default:
                     return ipCookie(config.name, data, config.options);
@@ -285,10 +285,10 @@
                     return ipCookie(config.name);
 
                   case "localstorage":
-                    return angular.fromJson(localStorage.getItem(config.name));
+                    return angular.fromJson($window.localStorage.getItem(config.name));
 
                   case "sessionstorage":
-                    return angular.fromJson(sessionStorage.getItem(config.name));
+                    return angular.fromJson($window.sessionStorage.getItem(config.name));
 
                   default:
                     return ipCookie(config.name);
@@ -312,7 +312,7 @@
             };
             return new OAuthToken();
         };
-        this.$get.$inject = [ "ipCookie" ];
+        this.$get.$inject = [ "ipCookie", "$window" ];
     }
     return ngModule;
 });
