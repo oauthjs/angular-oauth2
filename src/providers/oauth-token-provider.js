@@ -158,13 +158,12 @@ function OAuthTokenProvider() {
       switch (storage) {
        case 'cookies':
         return ipCookie.remove(config.name, config.options);
-          case 'localstorage':
-            return localStorage.removeItem(config.name);
-          case 'sessionstorage':
-            return sessionStorage.removeItem(config.name);
-          default :
-            return ipCookie.remove(config.name, config.options);
-
+       case 'localstorage':
+        return $window.localStorage.removeItem(config.name);
+       case 'sessionstorage':
+        return $window.sessionStorage.removeItem(config.name);
+       default :
+        return ipCookie.remove(config.name, config.options);
       }
     };
 
