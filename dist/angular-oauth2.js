@@ -14,10 +14,6 @@
     }
 })(this, function(angular, queryString) {
     var ngModule = angular.module("angular-oauth2", [ "ipCookie" ]).config(oauthConfig).factory("oauthInterceptor", oauthInterceptor).provider("OAuth", OAuthProvider).provider("OAuthToken", OAuthTokenProvider);
-    function oauthConfig($httpProvider) {
-        $httpProvider.interceptors.push("oauthInterceptor");
-    }
-    oauthConfig.$inject = [ "$httpProvider" ];
     function oauthInterceptor($q, $rootScope, OAuthToken) {
         return {
             request: function(config) {
@@ -40,6 +36,10 @@
         };
     }
     oauthInterceptor.$inject = [ "$q", "$rootScope", "OAuthToken" ];
+    function oauthConfig($httpProvider) {
+        $httpProvider.interceptors.push("oauthInterceptor");
+    }
+    oauthConfig.$inject = [ "$httpProvider" ];
     var _prototypeProperties = function(child, staticProps, instanceProps) {
         if (staticProps) Object.defineProperties(child, staticProps);
         if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
@@ -269,10 +269,10 @@
                     return ipCookie(config.name, data, config.options);
 
                   case "localstorage":
-                    return localStorage.setItem(config.name, JSON.stringify(data));
+                    return localStorage.setItem(config.name, angular.toJson(data));
 
                   case "sessionstorage":
-                    return sessionStorage.setItem(config.name, JSON.stringify(data));
+                    return localStorage.setItem(config.name, angular.toJson(data));
 
                   default:
                     return ipCookie(config.name, data, config.options);
@@ -285,10 +285,10 @@
                     return ipCookie(config.name);
 
                   case "localstorage":
-                    return JSON.parse(localStorage.getItem(config.name));
+                    return angular.fromJson(localStorage.getItem(config.name));
 
                   case "sessionstorage":
-                    return JSON.parse(sessionStorage.getItem(config.name));
+                    return angular.fromJson(sessionStorage.getItem(config.name));
 
                   default:
                     return ipCookie(config.name);

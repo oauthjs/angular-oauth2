@@ -13,7 +13,7 @@ function OAuthTokenProvider() {
   var storage;
   var config = {
     name: 'token',
-    storage: 'cookies',//cookies,localStorage,sessionStorage
+    storage: 'cookies', //cookies,localStorage,sessionStorage
     options: {
       secure: true
     }
@@ -114,15 +114,16 @@ function OAuthTokenProvider() {
      * @param data
      * @returns {*}
      */
+
     var setToken = function(data) {
      storage = config.storage.toLowerCase();
       switch (storage) {
        case 'cookies':
         return ipCookie(config.name, data, config.options);
        case 'localstorage':
-        return localStorage.setItem(config.name,JSON.stringify(data));
+        return localStorage.setItem(config.name, angular.toJson(data));
        case 'sessionstorage':
-        return sessionStorage.setItem(config.name,JSON.stringify(data));
+        return localStorage.setItem(config.name, angular.toJson(data));
        default :
         return ipCookie(config.name, data, config.options);
       }
@@ -139,12 +140,11 @@ function OAuthTokenProvider() {
        case 'cookies':
         return ipCookie(config.name);
        case 'localstorage':
-        return JSON.parse(localStorage.getItem(config.name));
+        return angular.fromJson(localStorage.getItem(config.name));
        case 'sessionstorage':
-        return JSON.parse(sessionStorage.getItem(config.name));
+        return angular.fromJson(sessionStorage.getItem(config.name));
        default :
         return ipCookie(config.name);
-
       }
     };
 
