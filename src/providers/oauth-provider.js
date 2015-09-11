@@ -182,7 +182,8 @@ function OAuthProvider() {
 
       revokeToken() {
         var data = queryString.stringify({
-          token: OAuthToken.getRefreshToken() ? OAuthToken.getRefreshToken() : OAuthToken.getAccessToken()
+          token: OAuthToken.getRefreshToken() ? OAuthToken.getRefreshToken() : OAuthToken.getAccessToken(),
+          token_type_hint: OAuthToken.getRefreshToken() ? 'request_token' : 'access_token'
         });
 
         var options = {
