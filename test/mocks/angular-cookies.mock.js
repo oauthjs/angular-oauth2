@@ -4,7 +4,7 @@
  */
 
 angular.module('angular-cookies.mock', [])
-  .factory('ipCookie', function() {
+  .factory('$cookies', function() {
     return (function () {
       var cookie;
 

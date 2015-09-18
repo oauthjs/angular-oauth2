@@ -10,10 +10,9 @@ import angular from 'angular';
  */
 
 function OAuthTokenProvider() {
-  var storage;
   var config = {
     name: 'token',
-    storage: 'cookies', //cookies,localStorage,sessionStorage
+    storage: 'cookies', //cookies, localStorage, sessionStorage
     options: {
       secure: true
     }
@@ -43,15 +42,20 @@ function OAuthTokenProvider() {
    * @ngInject
    */
 
-  this.$get = function(ipCookie, $window) {
+  this.$get = function(OAuthStorage) {
     class OAuthToken {
+
+      constructor(){
+        console.log(OAuthStorage);
+        //OAuthStorage.configure(config);
+      }
 
       /**
        * Set token.
        */
 
       set token(data) {
-        return setToken(data);
+        return OAuthStorage.setToken(data);
       }
 
       /**
@@ -59,7 +63,7 @@ function OAuthTokenProvider() {
        */
 
       get token() {
-        return getToken();
+        return OAuthStorage.getToken();
       }
 
       /**
@@ -103,69 +107,10 @@ function OAuthTokenProvider() {
        */
 
       removeToken() {
-        return removeToken();
+        return OAuthStorage.removeToken();
       }
 
     }
-
-    /**
-     * setToken
-     *
-     * @param data
-     * @returns {*}
-     */
-
-    var setToken = function(data) {
-     storage = config.storage.toLowerCase();
-      switch (storage) {
-       case 'cookies':
-        return ipCookie(config.name, data, config.options);
-       case 'localstorage':
-        return $window.localStorage.setItem(config.name, angular.toJson(data));
-       case 'sessionstorage':
-        return $window.sessionStorage.setItem(config.name, angular.toJson(data));
-       default :
-        return ipCookie(config.name, data, config.options);
-      }
-    };
-
-    /**
-     * getToken
-     *
-     * @returns {*}
-     */
-    var getToken = function() {
-     storage = config.storage.toLowerCase();
-      switch (storage) {
-       case 'cookies':
-        return ipCookie(config.name);
-       case 'localstorage':
-        return angular.fromJson($window.localStorage.getItem(config.name));
-       case 'sessionstorage':
-        return angular.fromJson($window.sessionStorage.getItem(config.name));
-       default :
-        return ipCookie(config.name);
-      }
-    };
-
-    /**
-     * removeToken
-     *
-     * @returns {*}
-     */
-    var removeToken = function() {
-     storage = config.storage.toLowerCase();
-      switch (storage) {
-       case 'cookies':
-        return ipCookie.remove(config.name, config.options);
-       case 'localstorage':
-        return $window.localStorage.removeItem(config.name);
-       case 'sessionstorage':
-        return $window.sessionStorage.removeItem(config.name);
-       default :
-        return ipCookie.remove(config.name, config.options);
-      }
-    };
 
     return new OAuthToken();
   };
