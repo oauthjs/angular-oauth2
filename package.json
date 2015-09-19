@@ -51,6 +51,7 @@
   "browser": {
     "angular": "./bower_components/angular/angular.js",
     "angular-cookies": "./bower_components/angular-cookies/angular-cookies.js",
+    "ngstorage": "./bower_components/ngstorage/ngStorage.js",
     "query-string": "./bower_components/query-string/query-string.js"
   },
   "scripts": {
