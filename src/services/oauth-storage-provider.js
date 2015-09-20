@@ -5,14 +5,27 @@
 import angular from 'angular';
 
 /**
- * Storage Service.
+ * OAuthStorage Service.
  */
 
 function OAuthStorageProvider() {
 
-    var config = {};
+    var config = {
+        name: 'token',
+        storage: 'cookies', //cookies, localStorage, sessionStorage
+        options: {
+            secure: true
+        }
+    };
 
-    this.configure = function (params) {
+    /**
+     * Configure.
+     *
+     * @param {object} params - An `object` of params to extend.
+     */
+
+    this.configure = function(params) {
+        // Extend default configuration.
         angular.extend(config, params);
         return config;
     };
@@ -23,9 +36,9 @@ function OAuthStorageProvider() {
      * @ngInject
      */
 
-    this.$get = ['$localStorage', '$sessionStorage', '$cookies', '$log', function ($localStorage, $sessionStorage, $cookies, $log) {
+    this.$get = function ($localStorage, $sessionStorage, $cookies, $log) {
         var storage;
-        var ngStorage = (config.storage || 'cookies').toLowerCase();
+        var ngStorage = config.storage.toLowerCase();
         if (ngStorage === 'localstorage') {
             storage = $localStorage;
         }
@@ -36,6 +49,7 @@ function OAuthStorageProvider() {
             storage = $cookies;
         }
         else {
+            storage = $cookies;
             $log.warn('Set storage to cookies, because storage type is unknown');
         }
 
@@ -45,12 +59,12 @@ function OAuthStorageProvider() {
                 this.name = name;
             }
 
-            set token(data) {
-                return this.storage.setItem(this.name, angular.toJson(data));
+            setToken(data) {
+                return (this.storage[this.name] = angular.toJson(data));
             }
 
-            get token() {
-                return angular.fromJson(this.storage.getItem(this.name));
+            getToken() {
+                return angular.fromJson(this.storage[this.name]);
             }
 
             deleteToken() {
@@ -65,11 +79,11 @@ function OAuthStorageProvider() {
                 this.options = options;
             }
 
-            set token(value) {
+            setToken(value) {
                 return this.$cookies.putObject(this.name, value, this.options);
             }
 
-            get token() {
+            getToken() {
                 return this.$cookies.getObject(this.name);
             }
 
@@ -78,19 +92,27 @@ function OAuthStorageProvider() {
             }
         }
 
-        class OAuthStorage {
-            constructor() {
-                this.storage = ngStorage === 'cookies' ?
-                    new CookieStorage(storage, config.name, config.options) :
-                    new BrowserStorage(storage, config.name);
-                $log.info('Storage Started');
+
+        class  OAuthStorage {
+            constructor(storage) {
+                this.storage = storage;
             }
 
-            set token(value) {
+            /**
+             * setToken
+             *
+             * @param value
+             * @returns {*}
+             */
+            setToken(value) {
                 return this.storage.setToken(value);
             }
 
-            get token() {
+            /**
+             * getToken
+             * @returns {*}
+             */
+            getToken() {
                 return this.storage.getToken();
             }
 
@@ -99,8 +121,12 @@ function OAuthStorageProvider() {
             }
         }
 
-        return new OAuthStorage();
-    }];
+        storage = ngStorage === 'cookies' ?
+            new CookieStorage(storage, config.name, config.options) :
+            new BrowserStorage(storage, config.name);
+
+        return new OAuthStorage(storage);
+    };
 
 }
 

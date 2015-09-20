@@ -9,7 +9,7 @@ import angular from 'angular';
  * Token provider.
  */
 
-function OAuthTokenProvider() {
+function OAuthTokenProvider($injector) {
   var config = {
     name: 'token',
     storage: 'cookies', //cookies, localStorage, sessionStorage
@@ -33,6 +33,10 @@ function OAuthTokenProvider() {
     // Extend default configuration.
     angular.extend(config, params);
 
+    $injector.invoke(function (OAuthStorageProvider) {
+      OAuthStorageProvider.configure(config);
+    });
+
     return config;
   };
 
@@ -45,16 +49,11 @@ function OAuthTokenProvider() {
   this.$get = function(OAuthStorage) {
     class OAuthToken {
 
-      constructor(){
-        console.log(OAuthStorage);
-        //OAuthStorage.configure(config);
-      }
-
       /**
        * Set token.
        */
 
-      set token(data) {
+      setToken(data) {
         return OAuthStorage.setToken(data);
       }
 
@@ -62,7 +61,7 @@ function OAuthTokenProvider() {
        * Get token.
        */
 
-      get token() {
+      getToken() {
         return OAuthStorage.getToken();
       }
 

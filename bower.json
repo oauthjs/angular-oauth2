@@ -24,7 +24,7 @@
   ],
   "dependencies": {
     "angular": "^1.4.0",
-    "angular-cookies": "^1.4.6",
+    "angular-cookies": "~1.4.6",
     "ngstorage": "^0.3.9",
     "query-string": "^1.0.0"
   }

@@ -13,14 +13,14 @@ import 'angular-cookies';
 import 'ngstorage';
 
 var ngModule = angular.module('angular-oauth2', [
-    'ngStorage',
-    'ngCookies'
+    'ngCookies',
+    'ngStorage'
   ])
   .config(oauthConfig)
   .factory('oauthInterceptor', oauthInterceptor)
   .provider('OAuth', OAuthProvider)
   .provider('OAuthToken', OAuthTokenProvider)
-  .service('OAuthStorage', OAuthStorageProvider)
+  .provider('OAuthStorage', OAuthStorageProvider)
 ;
 
 /**
