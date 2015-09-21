@@ -16,6 +16,7 @@ module.exports = function(config) {
     files: [
       'bower_components/angular/angular.js',
       'bower_components/angular-cookies/angular-cookies.js',
+      'bower_components/ngstorage/ngStorage.js',
       'bower_components/query-string/query-string.js',
       'node_modules/lodash/dist/lodash.js',
       'node_modules/angular-mocks/angular-mocks.js',

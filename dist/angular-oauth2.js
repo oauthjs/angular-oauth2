@@ -13,11 +13,33 @@
         root.angularOAuth2 = factory(root.angular, root.queryString);
     }
 })(this, function(angular, queryString) {
-    var ngModule = angular.module("angular-oauth2", [ "ngCookies" ]).config(oauthConfig).factory("oauthInterceptor", oauthInterceptor).provider("OAuth", OAuthProvider).provider("OAuthToken", OAuthTokenProvider);
+    var ngModule = angular.module("angular-oauth2", [ "ngCookies", "ngStorage" ]).config(oauthConfig).factory("oauthInterceptor", oauthInterceptor).provider("OAuth", OAuthProvider).provider("OAuthToken", OAuthTokenProvider).provider("OAuthStorage", OAuthStorageProvider);
     function oauthConfig($httpProvider) {
         $httpProvider.interceptors.push("oauthInterceptor");
     }
     oauthConfig.$inject = [ "$httpProvider" ];
+    function oauthInterceptor($q, $rootScope, OAuthToken) {
+        return {
+            request: function(config) {
+                if (OAuthToken.getAuthorizationHeader()) {
+                    config.headers = config.headers || {};
+                    config.headers.Authorization = OAuthToken.getAuthorizationHeader();
+                }
+                return config;
+            },
+            responseError: function(rejection) {
+                if (400 === rejection.status && rejection.data && ("invalid_request" === rejection.data.error || "invalid_grant" === rejection.data.error)) {
+                    OAuthToken.removeToken();
+                    $rootScope.$emit("oauth:error", rejection);
+                }
+                if (401 === rejection.status && (rejection.data && "invalid_token" === rejection.data.error) || rejection.headers("www-authenticate") && 0 === rejection.headers("www-authenticate").indexOf("Bearer")) {
+                    $rootScope.$emit("oauth:error", rejection);
+                }
+                return $q.reject(rejection);
+            }
+        };
+    }
+    oauthInterceptor.$inject = [ "$q", "$rootScope", "OAuthToken" ];
     var _prototypeProperties = function(child, staticProps, instanceProps) {
         if (staticProps) Object.defineProperties(child, staticProps);
         if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
@@ -156,9 +178,10 @@
         if (staticProps) Object.defineProperties(child, staticProps);
         if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
     };
-    function OAuthTokenProvider() {
+    function OAuthTokenProvider($injector) {
         var config = {
             name: "token",
+            storage: "cookies",
             options: {
                 secure: true
             }
@@ -168,15 +191,18 @@
                 throw new TypeError("Invalid argument: `config` must be an `Object`.");
             }
             angular.extend(config, params);
+            $injector.invoke(function(OAuthStorageProvider) {
+                OAuthStorageProvider.configure(config);
+            });
             return config;
         };
-        this.$get = function($cookies) {
+        this.$get = function(OAuthStorage) {
             var OAuthToken = function() {
                 function OAuthToken() {}
                 _prototypeProperties(OAuthToken, null, {
                     setToken: {
                         value: function setToken(data) {
-                            return $cookies.putObject(config.name, data, config.options);
+                            return OAuthStorage.setToken(data);
                         },
                         writable: true,
                         enumerable: true,
@@ -184,7 +210,7 @@
                     },
                     getToken: {
                         value: function getToken() {
-                            return $cookies.getObject(config.name);
+                            return OAuthStorage.getToken();
                         },
                         writable: true,
                         enumerable: true,
@@ -227,7 +253,7 @@
                     },
                     removeToken: {
                         value: function removeToken() {
-                            return $cookies.remove(config.name, config.options);
+                            return OAuthStorage.deleteToken();
                         },
                         writable: true,
                         enumerable: true,
@@ -238,29 +264,140 @@
             }();
             return new OAuthToken();
         };
-        this.$get.$inject = [ "$cookies" ];
+        this.$get.$inject = [ "OAuthStorage" ];
     }
-    function oauthInterceptor($q, $rootScope, OAuthToken) {
-        return {
-            request: function(config) {
-                if (OAuthToken.getAuthorizationHeader()) {
-                    config.headers = config.headers || {};
-                    config.headers.Authorization = OAuthToken.getAuthorizationHeader();
-                }
-                return config;
-            },
-            responseError: function(rejection) {
-                if (400 === rejection.status && rejection.data && ("invalid_request" === rejection.data.error || "invalid_grant" === rejection.data.error)) {
-                    OAuthToken.removeToken();
-                    $rootScope.$emit("oauth:error", rejection);
-                }
-                if (401 === rejection.status && (rejection.data && "invalid_token" === rejection.data.error) || rejection.headers("www-authenticate") && 0 === rejection.headers("www-authenticate").indexOf("Bearer")) {
-                    $rootScope.$emit("oauth:error", rejection);
-                }
-                return $q.reject(rejection);
+    var _prototypeProperties = function(child, staticProps, instanceProps) {
+        if (staticProps) Object.defineProperties(child, staticProps);
+        if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
+    };
+    function OAuthStorageProvider() {
+        var config = {
+            name: "token",
+            storage: "cookies",
+            options: {
+                secure: true
             }
         };
+        this.configure = function(params) {
+            angular.extend(config, params);
+            return config;
+        };
+        this.$get = function($localStorage, $sessionStorage, $cookies, $log) {
+            var storage;
+            var ngStorage = config.storage.toLowerCase();
+            if (ngStorage === "localstorage") {
+                storage = $localStorage;
+            } else if (ngStorage === "sessionstorage") {
+                storage = $sessionStorage;
+            } else if (ngStorage === "cookies") {
+                storage = $cookies;
+            } else {
+                storage = $cookies;
+                $log.warn("Set storage to cookies, because storage type is unknown");
+            }
+            var BrowserStorage = function() {
+                function BrowserStorage(storage, name) {
+                    this.storage = storage;
+                    this.name = name;
+                }
+                _prototypeProperties(BrowserStorage, null, {
+                    setToken: {
+                        value: function setToken(data) {
+                            return this.storage[this.name] = angular.toJson(data);
+                        },
+                        writable: true,
+                        enumerable: true,
+                        configurable: true
+                    },
+                    getToken: {
+                        value: function getToken() {
+                            return angular.fromJson(this.storage[this.name]);
+                        },
+                        writable: true,
+                        enumerable: true,
+                        configurable: true
+                    },
+                    deleteToken: {
+                        value: function deleteToken() {
+                            delete this.storage[this.name];
+                        },
+                        writable: true,
+                        enumerable: true,
+                        configurable: true
+                    }
+                });
+                return BrowserStorage;
+            }();
+            var CookieStorage = function() {
+                function CookieStorage($cookies, name, options) {
+                    this.$cookies = $cookies;
+                    this.name = name;
+                    this.options = options;
+                }
+                _prototypeProperties(CookieStorage, null, {
+                    setToken: {
+                        value: function setToken(value) {
+                            return this.$cookies.putObject(this.name, value, this.options);
+                        },
+                        writable: true,
+                        enumerable: true,
+                        configurable: true
+                    },
+                    getToken: {
+                        value: function getToken() {
+                            return this.$cookies.getObject(this.name);
+                        },
+                        writable: true,
+                        enumerable: true,
+                        configurable: true
+                    },
+                    deleteToken: {
+                        value: function deleteToken() {
+                            return this.$cookies.remove(this.name, this.options);
+                        },
+                        writable: true,
+                        enumerable: true,
+                        configurable: true
+                    }
+                });
+                return CookieStorage;
+            }();
+            var OAuthStorage = function() {
+                function OAuthStorage(storage) {
+                    this.storage = storage;
+                }
+                _prototypeProperties(OAuthStorage, null, {
+                    setToken: {
+                        value: function setToken(value) {
+                            return this.storage.setToken(value);
+                        },
+                        writable: true,
+                        enumerable: true,
+                        configurable: true
+                    },
+                    getToken: {
+                        value: function getToken() {
+                            return this.storage.getToken();
+                        },
+                        writable: true,
+                        enumerable: true,
+                        configurable: true
+                    },
+                    deleteToken: {
+                        value: function deleteToken() {
+                            return this.storage.deleteToken();
+                        },
+                        writable: true,
+                        enumerable: true,
+                        configurable: true
+                    }
+                });
+                return OAuthStorage;
+            }();
+            storage = ngStorage === "cookies" ? new CookieStorage(storage, config.name, config.options) : new BrowserStorage(storage, config.name);
+            return new OAuthStorage(storage);
+        };
+        this.$get.$inject = [ "$localStorage", "$sessionStorage", "$cookies", "$log" ];
     }
-    oauthInterceptor.$inject = [ "$q", "$rootScope", "OAuthToken" ];
     return ngModule;
 });

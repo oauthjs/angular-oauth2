@@ -9,9 +9,10 @@ import angular from 'angular';
  * Token provider.
  */
 
-function OAuthTokenProvider() {
+function OAuthTokenProvider($injector) {
   var config = {
     name: 'token',
+    storage: 'cookies', //cookies, localStorage, sessionStorage
     options: {
       secure: true
     }
@@ -32,6 +33,10 @@ function OAuthTokenProvider() {
     // Extend default configuration.
     angular.extend(config, params);
 
+    $injector.invoke(function (OAuthStorageProvider) {
+      OAuthStorageProvider.configure(config);
+    });
+
     return config;
   };
 
@@ -41,7 +46,7 @@ function OAuthTokenProvider() {
    * @ngInject
    */
 
-  this.$get = function($cookies) {
+  this.$get = function(OAuthStorage) {
     class OAuthToken {
 
       /**
@@ -49,7 +54,7 @@ function OAuthTokenProvider() {
        */
 
       setToken(data) {
-        return $cookies.putObject(config.name, data, config.options);
+        return OAuthStorage.setToken(data);
       }
 
       /**
@@ -57,7 +62,7 @@ function OAuthTokenProvider() {
        */
 
       getToken() {
-        return $cookies.getObject(config.name);
+        return OAuthStorage.getToken();
       }
 
       /**
@@ -101,7 +106,7 @@ function OAuthTokenProvider() {
        */
 
       removeToken() {
-        return $cookies.remove(config.name, config.options);
+        return OAuthStorage.deleteToken();
       }
     }
 
