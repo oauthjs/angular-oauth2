@@ -68,7 +68,7 @@ function OAuthStorageProvider() {
             }
 
             deleteToken() {
-                this.storage.removeItem(this.name);
+                delete this.storage[this.name];
             }
         }
 

@@ -253,7 +253,7 @@
                     },
                     removeToken: {
                         value: function removeToken() {
-                            return OAuthStorage.removeToken();
+                            return OAuthStorage.deleteToken();
                         },
                         writable: true,
                         enumerable: true,
@@ -319,7 +319,7 @@
                     },
                     deleteToken: {
                         value: function deleteToken() {
-                            this.storage.removeItem(this.name);
+                            delete this.storage[this.name];
                         },
                         writable: true,
                         enumerable: true,

@@ -106,7 +106,7 @@ function OAuthTokenProvider($injector) {
        */
 
       removeToken() {
-        return OAuthStorage.removeToken();
+        return OAuthStorage.deleteToken();
       }
     }
 
