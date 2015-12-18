@@ -151,7 +151,6 @@ function OAuthProvider() {
 
       getRefreshToken() {
         var data = {
-          client_id: config.clientId,
           grant_type: 'refresh_token',
           refresh_token: OAuthToken.getRefreshToken(),
         };
@@ -182,8 +181,13 @@ function OAuthProvider() {
 
       revokeToken() {
         var data = queryString.stringify({
+          client_id: config.clientId,
           token: OAuthToken.getRefreshToken() ? OAuthToken.getRefreshToken() : OAuthToken.getAccessToken()
         });
+
+        if(config.clientSecret) {
+          data.client_secret = config.clientSecret;
+        }
 
         var options = {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }

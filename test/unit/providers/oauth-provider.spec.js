@@ -363,6 +363,7 @@ describe('OAuthProvider', function() {
         queryString.stringify.callCount.should.equal(1);
         queryString.stringify.firstCall.args.should.have.lengthOf(1);
         queryString.stringify.firstCall.args[0].should.eql({
+          client_id: default.clientId,
           token: 'bar'
         });
         queryString.stringify.restore();
@@ -378,14 +379,18 @@ describe('OAuthProvider', function() {
         queryString.stringify.callCount.should.equal(1);
         queryString.stringify.firstCall.args.should.have.lengthOf(1);
         queryString.stringify.firstCall.args[0].should.eql({
-          token: 'foo'
+          client_id: default.clientId,
+          token: 'foo',
+          client_secret: default.clientSecret
         });
         queryString.stringify.restore();
       }));
 
       it('should return an error if `token` is missing', inject(function($httpBackend, OAuth) {
         var data = queryString.stringify({
-          token: undefined
+          client_id: default.clientId,
+          token: undefined,
+          client_secret: default.clientSecret
         });
 
         $httpBackend.expectPOST(defaults.baseUrl + defaults.revokePath, data)
@@ -407,7 +412,9 @@ describe('OAuthProvider', function() {
         OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
 
         var data = queryString.stringify({
-          token: 'bar'
+          client_id: default.clientId,
+          token: 'bar',
+          client_secret: default.clientSecret
         });
 
         $httpBackend.expectPOST(defaults.baseUrl + defaults.revokePath, data)
