@@ -5,11 +5,13 @@
 
 describe('OAuthProvider', function() {
   var defaults = {
+    authorizePath: '/oauth2/authorize',
     baseUrl: 'https://api.website.com',
     clientId: 'CLIENT_ID',
+    clientSecret: 'CLIENT_SECRET',
     grantPath: '/oauth2/token',
-    revokePath: '/oauth2/revoke',
-    clientSecret: 'CLIENT_SECRET'
+    redirectUrl: 'https://website.com',
+    revokePath: '/oauth2/revoke'
   };
 
   describe('configure()', function() {
@@ -46,6 +48,25 @@ describe('OAuthProvider', function() {
       } catch(e) {
         e.should.be.an.instanceOf(Error);
       }
+    });
+
+    it('should throw an error if `authorizePath` param is empty', function() {
+      try {
+        provider.configure(_.defaults({ authorizePath: null }, defaults));
+
+        should.fail();
+      } catch(e) {
+        e.should.be.an.instanceOf(Error);
+        e.message.should.match(/authorizePath/);
+      }
+    });
+
+    it('should add facing slash from `authorizePath`', function() {
+      var config = provider.configure(_.defaults({
+        authorizePath: 'oauth2/authorize'
+      }, defaults));
+
+      config.authorizePath.should.equal('/oauth2/authorize');
     });
 
     it('should throw an error if `baseUrl` param is empty', function() {
@@ -136,6 +157,71 @@ describe('OAuthProvider', function() {
     afterEach(inject(function(OAuthToken) {
       OAuthToken.removeToken();
     }));
+
+    describe('authorize()', function() {
+      var data = {
+        client_id: defaults.clientId,
+        response_type: 'code',
+        scope: 'foo:bar',
+        state: 'state_hash'
+      };
+
+      it('should throw an error if `clientId` is missing', inject(function(OAuth) {
+        try {
+          OAuth.authorize();
+
+          should.fail();
+        } catch(e) {
+          e.should.be.an.instanceOf(Error);
+          e.message.should.match(/clientId/);
+        }
+      }));
+
+      it('should call `queryString.stringify` with default `data` if `state` and `scope` are not provided', inject(function(OAuth) {
+        sinon.spy(queryString, 'stringify');
+
+        OAuth.authorize(data.client_id);
+
+        queryString.stringify.callCount.should.equal(1);
+        queryString.stringify.firstCall.args.should.have.lengthOf(1);
+        queryString.stringify.firstCall.args[0].should.eql({
+          client_id: data.client_id,
+          response_type: 'code'
+        });
+
+        queryString.stringify.restore();
+      }));
+
+      it('should call `queryString.stringify` with provided `state` and `scope`', inject(function(OAuth) {
+        sinon.spy(queryString, 'stringify');
+
+        OAuth.authorize(data.client_id, data.scope, data.state);
+
+        queryString.stringify.callCount.should.equal(1);
+        queryString.stringify.firstCall.args.should.have.lengthOf(1);
+        queryString.stringify.firstCall.args[0].should.eql({
+          client_id: data.client_id,
+          response_type: 'code',
+          scope: data.scope,
+          state: data.state
+        });
+
+        queryString.stringify.restore();
+      }));
+
+      it('should call `$http.get` with url containing the stringified `data`', inject(function($httpBackend, OAuth) {
+        const qs = queryString.stringify(data);
+
+        $httpBackend.expectGET(`${defaults.baseUrl}${defaults.authorizePath}?${qs}`).respond(200, 'foobar');
+
+        OAuth.authorize(data.client_id, data.scope, data.state);
+
+        $httpBackend.flush();
+
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+      }));
+    });
 
     describe('isAuthenticated()', function() {
       it('should be true when there is a stored `token` cookie', inject(function(OAuth, OAuthToken) {

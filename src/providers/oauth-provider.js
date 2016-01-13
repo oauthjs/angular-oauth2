@@ -7,6 +7,7 @@ import angular from 'angular';
 import queryString from 'query-string';
 
 var defaults = {
+  authorizePath: '/oauth2/authorize',
   baseUrl: null,
   clientId: null,
   clientSecret: null,
@@ -15,6 +16,7 @@ var defaults = {
 };
 
 var requiredKeys = [
+  'authorizePath',
   'baseUrl',
   'clientId',
   'grantPath',
@@ -60,6 +62,11 @@ function OAuthProvider() {
       config.baseUrl = config.baseUrl.slice(0, -1);
     }
 
+    // Add `authorizePath` facing slash.
+    if('/' !== config.authorizePath[0]) {
+      config.authorizePath = `/${config.authorizePath}`;
+    }
+
     // Add `grantPath` facing slash.
     if('/' !== config.grantPath[0]) {
       config.grantPath = `/${config.grantPath}`;
@@ -90,6 +97,40 @@ function OAuthProvider() {
         if (!config) {
           throw new Error('`OAuthProvider` must be configured first.');
         }
+      }
+
+      /**
+       * Requests a authorization for an application based on clientId, scope and state
+       *
+       * @param {string} clientId - Application `clientId`
+       * @param {string} scope - Scope(s) defined for the application
+       * @param {string} state - Randomly generated `state` string
+       * @return {promise} A response promise.
+       */
+
+      authorize(clientId, scope, state) {
+        // Check if `clientId` is defined.
+        if (!clientId) {
+          throw new Error('Missing parameter: clientId.');
+        }
+
+        const data = {
+          client_id: clientId,
+          response_type: 'code'
+        };
+
+        if (scope) {
+          data.scope = scope;
+        }
+
+        if (state) {
+          data.state = state;
+        }
+
+        const qs = queryString.stringify(data);
+        const url = `${config.baseUrl}${config.authorizePath}?${qs}`;
+
+        return $http.get(url);
       }
 
       /**
