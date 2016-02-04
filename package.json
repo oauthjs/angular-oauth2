@@ -50,18 +50,8 @@
     "sinon": "^1.17.3",
     "yargs": "^3.6.0"
   },
-  "browser": {
-    "angular": "./bower_components/angular/angular.js",
-    "angular-cookies": "./bower_components/angular-cookies/angular-cookies.js",
-    "query-string": "./bower_components/query-string/query-string.js"
-  },
   "scripts": {
     "changelog": "./node_modules/.bin/github-changes -o seegno -r angular-oauth2 -a --only-pulls --use-commit-body --title 'Changelog' --date-format '/ YYYY-MM-DD'",
     "test": "./node_modules/.bin/gulp test --browsers Firefox"
-  },
-  "browserify-shim": {
-    "angular": {
-      "exports": "angular"
-    }
   }
 }
