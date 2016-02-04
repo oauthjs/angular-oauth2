@@ -45,7 +45,9 @@
     "karma-should": "0.0.1",
     "karma-sinon": "^1.0.4",
     "lodash": "^2.4.1",
+    "mocha": "^2.4.5",
     "should": "^4.6.0",
+    "sinon": "^1.17.3",
     "yargs": "^3.6.0"
   },
   "browser": {
