@@ -16,7 +16,7 @@ Choose your preferred method:
 
 ###### 1. Download `angular-oauth2` dependencies.
 
-* [angular](https://github.com/angular/angular.js)
+* [angular](https://github.com/angular/bower-angular)
 * [angular-cookies](https://github.com/angular/bower-angular-cookies)
 * [query-string](https://github.com/sindresorhus/query-string)
 
@@ -27,7 +27,7 @@ If you're using `bower` they will be automatically downloaded upon installing th
 ```html
 <script src="<VENDOR_FOLDER>/angular/angular.min.js"></script>
 <script src="<VENDOR_FOLDER>/angular-cookies/angular-cookies.min.js"></script>
-<script src="<VENDOR_FOLDER>/query-string/query-string.min.js"></script>
+<script src="<VENDOR_FOLDER>/query-string/query-string.js"></script>
 <script src="<VENDOR_FOLDER>/angular-oauth2/dist/angular-oauth2.min.js"></script>
 ```
 
