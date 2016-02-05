@@ -163,7 +163,10 @@ function OAuthProvider() {
         data = queryString.stringify(data);
 
         var options = {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+          headers: {
+            'Authorization': undefined,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         };
 
         return $http.post(`${config.baseUrl}${config.grantPath}`, data, options).then((response) => {
