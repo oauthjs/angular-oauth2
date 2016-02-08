@@ -407,7 +407,8 @@ describe('OAuthProvider', function() {
         OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
 
         var data = queryString.stringify({
-          token: 'bar'
+          token: 'bar',
+          token_type_hint: 'refresh_token'
         });
 
         $httpBackend.expectPOST(defaults.baseUrl + defaults.revokePath, data)
