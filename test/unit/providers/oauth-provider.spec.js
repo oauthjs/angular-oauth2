@@ -316,8 +316,9 @@ describe('OAuthProvider', function() {
         queryString.stringify.firstCall.args.should.have.lengthOf(1);
         queryString.stringify.firstCall.args[0].should.eql({
           client_id: defaults.clientId,
-          client_secret: defaults.clientSecret,
-          token: 'bar'
+          token: 'bar',
+          token_type_hint: 'refresh_token',
+          client_secret: defaults.clientSecret
         });
         queryString.stringify.restore();
       }));
@@ -334,6 +335,7 @@ describe('OAuthProvider', function() {
         queryString.stringify.firstCall.args[0].should.eql({
           client_id: defaults.clientId,
           token: 'foo',
+          token_type_hint: 'access_token',
           client_secret: defaults.clientSecret
         });
         queryString.stringify.restore();
@@ -343,6 +345,7 @@ describe('OAuthProvider', function() {
         var data = queryString.stringify({
           client_id: defaults.clientId,
           token: undefined,
+          token_type_hint: 'access_token',
           client_secret: defaults.clientSecret
         });
 
@@ -367,6 +370,7 @@ describe('OAuthProvider', function() {
         var data = queryString.stringify({
           client_id: defaults.clientId,
           token: 'bar',
+          token_type_hint: 'refresh_token',
           client_secret: defaults.clientSecret
         });
 
