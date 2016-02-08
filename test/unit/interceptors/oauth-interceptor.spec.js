@@ -37,6 +37,28 @@ describe('oauthInterceptor', function() {
     $httpBackend.flush();
   }));
 
+  it('should not inject `Authorization` header if it already exists', inject(function($http, $httpBackend, OAuthToken) {
+    OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
+
+    $httpBackend.expectGET('https://website.com', function(headers) {
+      headers.Authorization = undefined;
+
+      return headers;
+    }).respond(200);
+
+    $http.get('https://website.com').then(function(response) {
+      response.config.headers.should.have.property('Authorization');
+      (undefined === response.config.headers.Authorization).should.be.true;
+    }).catch(function() {
+      should.fail();
+    });
+
+    $httpBackend.flush();
+
+    $httpBackend.verifyNoOutstandingExpectation();
+    $httpBackend.verifyNoOutstandingRequest();
+  }));
+
   it('should remove `token` if an `invalid_request` error occurs', inject(function($http, $httpBackend, OAuthToken) {
     sinon.spy(OAuthToken, 'removeToken');
 
