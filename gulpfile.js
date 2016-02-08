@@ -27,10 +27,24 @@ var config = {
   umd: {
     namespace: 'angularOAuth2',
     exports: 'ngModule',
-    deps: [
-      'angular',
-      { name: 'query-string', globalName: 'queryString', paramName: 'queryString' }
-    ]
+    template: `
+      (function(root, factory) {
+        if (typeof define === 'function' && define.amd) {
+          define([ "angular", "angular-cookies", "query-string" ], factory);
+        } else if (typeof exports === 'object') {
+          module.exports = factory(require("angular"), require("angular-cookies"), require("query-string"));
+        } else {
+          root.<%= namespace %> = factory(root.angular, 'ngCookies', root.queryString);
+        }
+      }(this, function(angular, ngCookies, queryString) {
+        <% if (exports) { %>
+          <%= contents %>
+          return <%= exports %>;
+        <% } else { %>
+          return <%= contents %>;
+        <% } %>
+      }));
+    `
   },
   banner: ['/**',
     ' * <%= pkg.name %> - <%= pkg.description %>',

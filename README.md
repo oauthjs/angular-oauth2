@@ -177,11 +177,10 @@ It will be awesome if you can help us evolve `angular-oauth2`. Want to help?
 
 1. [Fork it](https://github.com/seegno/angular-oauth2).
 2. `npm install`.
-3. `bower install`
-4. Do your magic.
-5. Run the tests: `gulp test`.
-6. Build: `gulp build`
-7. Create a [Pull Request](https://github.com/seegno/angular-oauth2/compare).
+3. Do your magic.
+4. Run the tests: `gulp test`.
+5. Build: `gulp build`
+6. Create a [Pull Request](https://github.com/seegno/angular-oauth2/compare).
 
 *The source files are written in ES6.*
 

@@ -21,6 +21,11 @@
     "url": "https://github.com/seegno/angular-oauth2/issues"
   },
   "homepage": "https://github.com/seegno/angular-oauth2",
+  "dependencies": {
+    "angular": "^1.4.0",
+    "angular-cookies": "^1.4.0",
+    "query-string": "^1.0.0"
+  },
   "devDependencies": {
     "6to5ify": "^3.1.2",
     "angular-mocks": "^1.3.9",
@@ -45,21 +50,13 @@
     "karma-should": "0.0.1",
     "karma-sinon": "^1.0.4",
     "lodash": "^2.4.1",
+    "mocha": "^2.4.5",
     "should": "^4.6.0",
+    "sinon": "^1.17.3",
     "yargs": "^3.6.0"
-  },
-  "browser": {
-    "angular": "./bower_components/angular/angular.js",
-    "angular-cookies": "./bower_components/angular-cookies/angular-cookies.js",
-    "query-string": "./bower_components/query-string/query-string.js"
   },
   "scripts": {
     "changelog": "./node_modules/.bin/github-changes -o seegno -r angular-oauth2 -a --only-pulls --use-commit-body --title 'Changelog' --date-format '/ YYYY-MM-DD'",
     "test": "./node_modules/.bin/gulp test --browsers Firefox"
-  },
-  "browserify-shim": {
-    "angular": {
-      "exports": "angular"
-    }
   }
 }
