@@ -142,15 +142,17 @@ function OAuthProvider() {
        * Retrieves the `refresh_token` and stores the `response.data` on cookies
        * using the `OAuthToken`.
        *
+       * @param {object} data - Request content.
+       * @param {object} options - Optional configuration.
        * @return {promise} A response promise.
        */
 
-      getRefreshToken() {
-        var data = {
+      getRefreshToken(data, options) {
+        data = angular.extend({
           client_id: config.clientId,
           grant_type: 'refresh_token',
           refresh_token: OAuthToken.getRefreshToken(),
-        };
+        }, data);
 
         if (null !== config.clientSecret) {
           data.client_secret = config.clientSecret;
@@ -158,12 +160,12 @@ function OAuthProvider() {
 
         data = queryString.stringify(data);
 
-        var options = {
+        options = angular.extend({
           headers: {
             'Authorization': undefined,
             'Content-Type': 'application/x-www-form-urlencoded'
           }
-        };
+        }, options);
 
         return $http.post(`${config.baseUrl}${config.grantPath}`, data, options).then((response) => {
           OAuthToken.setToken(response.data);
