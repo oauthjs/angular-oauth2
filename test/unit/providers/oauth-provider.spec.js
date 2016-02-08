@@ -158,54 +158,6 @@ describe('OAuthProvider', function() {
         client_secret: defaults.clientSecret
       });
 
-      it('should throw an error if `user` is missing', inject(function(OAuth) {
-        try {
-          OAuth.getAccessToken();
-
-          should.fail();
-        } catch(e) {
-          e.should.be.an.instanceOf(Error);
-          e.message.should.match(/user/);
-        }
-      }));
-
-      it('should throw an error if `user` is empty', inject(function(OAuth) {
-        try {
-          OAuth.getAccessToken({});
-
-          should.fail();
-        } catch(e) {
-          e.should.be.an.instanceOf(Error);
-          e.message.should.match(/user/);
-        }
-      }));
-
-      it('should throw an error if `username` is not provided', inject(function(OAuth) {
-        try {
-          OAuth.getAccessToken({
-            password: 'foo'
-          });
-
-          should.fail();
-        } catch(e) {
-          e.should.be.an.instanceOf(Error);
-          e.message.should.match(/user/);
-        }
-      }));
-
-      it('should throw an error if `password` is not provided', inject(function(OAuth) {
-        try {
-          OAuth.getAccessToken({
-            username: 'foo'
-          });
-
-          should.fail();
-        } catch(e) {
-          e.should.be.an.instanceOf(Error);
-          e.message.should.match(/user/);
-        }
-      }));
-
       it('should call `queryString.stringify`', inject(function(OAuth) {
         sinon.spy(queryString, 'stringify');
 

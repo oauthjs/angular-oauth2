@@ -107,23 +107,16 @@ function OAuthProvider() {
        * Retrieves the `access_token` and stores the `response.data` on cookies
        * using the `OAuthToken`.
        *
-       * @param {object} user - Object with `username` and `password` properties.
-       * @param {object} config - Optional configuration object sent to `POST`.
+       * @param {object} data - Request content, e.g., `username` and `password`.
+       * @param {object} options - Optional configuration.
        * @return {promise} A response promise.
        */
 
-      getAccessToken(user, options) {
-        // Check if `user` has required properties.
-        if (!user || !user.username || !user.password) {
-          throw new Error('`user` must be an object with `username` and `password` properties.');
-        }
-
-        var data = {
+      getAccessToken(data, options) {
+        data = angular.extend({
           client_id: config.clientId,
-          grant_type: 'password',
-          username: user.username,
-          password: user.password
-        };
+          grant_type: 'password'
+        }, data);
 
         if (null !== config.clientSecret) {
           data.client_secret = config.clientSecret;
@@ -132,7 +125,10 @@ function OAuthProvider() {
         data = queryString.stringify(data);
 
         options = angular.extend({
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+          headers: {
+            'Authorization': undefined,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }, options);
 
         return $http.post(`${config.baseUrl}${config.grantPath}`, data, options).then((response) => {
