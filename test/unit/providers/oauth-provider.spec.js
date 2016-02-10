@@ -158,54 +158,6 @@ describe('OAuthProvider', function() {
         client_secret: defaults.clientSecret
       });
 
-      it('should throw an error if `user` is missing', inject(function(OAuth) {
-        try {
-          OAuth.getAccessToken();
-
-          should.fail();
-        } catch(e) {
-          e.should.be.an.instanceOf(Error);
-          e.message.should.match(/user/);
-        }
-      }));
-
-      it('should throw an error if `user` is empty', inject(function(OAuth) {
-        try {
-          OAuth.getAccessToken({});
-
-          should.fail();
-        } catch(e) {
-          e.should.be.an.instanceOf(Error);
-          e.message.should.match(/user/);
-        }
-      }));
-
-      it('should throw an error if `username` is not provided', inject(function(OAuth) {
-        try {
-          OAuth.getAccessToken({
-            password: 'foo'
-          });
-
-          should.fail();
-        } catch(e) {
-          e.should.be.an.instanceOf(Error);
-          e.message.should.match(/user/);
-        }
-      }));
-
-      it('should throw an error if `password` is not provided', inject(function(OAuth) {
-        try {
-          OAuth.getAccessToken({
-            username: 'foo'
-          });
-
-          should.fail();
-        } catch(e) {
-          e.should.be.an.instanceOf(Error);
-          e.message.should.match(/user/);
-        }
-      }));
-
       it('should call `queryString.stringify`', inject(function(OAuth) {
         sinon.spy(queryString, 'stringify');
 
@@ -364,8 +316,9 @@ describe('OAuthProvider', function() {
         queryString.stringify.firstCall.args.should.have.lengthOf(1);
         queryString.stringify.firstCall.args[0].should.eql({
           client_id: defaults.clientId,
-          client_secret: defaults.clientSecret,
-          token: 'bar'
+          token: 'bar',
+          token_type_hint: 'refresh_token',
+          client_secret: defaults.clientSecret
         });
         queryString.stringify.restore();
       }));
@@ -382,6 +335,7 @@ describe('OAuthProvider', function() {
         queryString.stringify.firstCall.args[0].should.eql({
           client_id: defaults.clientId,
           token: 'foo',
+          token_type_hint: 'access_token',
           client_secret: defaults.clientSecret
         });
         queryString.stringify.restore();
@@ -391,6 +345,7 @@ describe('OAuthProvider', function() {
         var data = queryString.stringify({
           client_id: defaults.clientId,
           token: undefined,
+          token_type_hint: 'access_token',
           client_secret: defaults.clientSecret
         });
 
@@ -415,6 +370,7 @@ describe('OAuthProvider', function() {
         var data = queryString.stringify({
           client_id: defaults.clientId,
           token: 'bar',
+          token_type_hint: 'refresh_token',
           client_secret: defaults.clientSecret
         });
 
