@@ -17,7 +17,7 @@ module.exports = function(config) {
       'node_modules/angular/angular.js',
       'node_modules/angular-cookies/angular-cookies.js',
       'node_modules/query-string/query-string.js',
-      'node_modules/lodash/dist/lodash.js',
+      'node_modules/lodash/lodash.js',
       'node_modules/angular-mocks/angular-mocks.js',
       'dist/angular-oauth2.js',
       'test/mocks/**/*.mock.js',
