@@ -7,7 +7,7 @@ var concat = require('gulp-concat');
 var gulp = require('gulp');
 var header = require('gulp-header');
 var jshint = require('gulp-jshint');
-var karma = require('karma').server;
+var karma = require('karma').Server;
 var ngAnnotate = require('gulp-ng-annotate');
 var pkg = require('./package.json');
 var rename = require('gulp-rename');
@@ -95,12 +95,14 @@ gulp.task('scripts-lint', function() {
  */
 
 gulp.task('test', ['scripts'], function() {
-  return karma.start({
+  var server = new karma({
     configFile: __dirname + '/karma.conf.js',
     singleRun: true
   }, function(code) {
     console.log('Karma has exited with code', code);
   });
+
+  return server.start();
 });
 
 /**
