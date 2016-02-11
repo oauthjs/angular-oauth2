@@ -10,7 +10,7 @@ git:
   depth: 10
 
 node_js:
-  - iojs
+  - 4.3
 
 cache:
   directories:
