@@ -3,6 +3,7 @@
  * Module dependencies.
  */
 
+var babel = require('gulp-babel');
 var concat = require('gulp-concat');
 var gulp = require('gulp');
 var header = require('gulp-header');
@@ -11,7 +12,6 @@ var karma = require('karma').Server;
 var ngAnnotate = require('gulp-ng-annotate');
 var pkg = require('./package.json');
 var rename = require('gulp-rename');
-var to5 = require('gulp-6to5');
 var uglify = require('gulp-uglify');
 var wrapUmd = require('gulp-wrap-umd');
 
@@ -61,7 +61,7 @@ var config = {
 
 gulp.task('scripts', ['scripts-lint'], function() {
   return gulp.src(config.src)
-    .pipe(to5({ modules: 'ignore', blacklist: ['useStrict'] }))
+    .pipe(babel({ modules: 'ignore', blacklist: ['useStrict'] }))
     .pipe(ngAnnotate({ single_quotes: true, add: true }))
     .pipe(concat(config.name))
     .pipe(wrapUmd(config.umd))
