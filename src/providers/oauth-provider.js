@@ -75,8 +75,6 @@ function OAuthProvider() {
 
   /**
    * OAuth service.
-   *
-   * @ngInject
    */
 
   this.$get = function($http, OAuthToken) {
@@ -214,6 +212,8 @@ function OAuthProvider() {
 
     return new OAuth();
   };
+
+  this.$get.$inject = ['$http', 'OAuthToken'];
 }
 
 /**
