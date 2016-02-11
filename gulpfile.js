@@ -9,7 +9,6 @@ var gulp = require('gulp');
 var header = require('gulp-header');
 var jshint = require('gulp-jshint');
 var karma = require('karma').Server;
-var ngAnnotate = require('gulp-ng-annotate');
 var pkg = require('./package.json');
 var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
@@ -62,7 +61,6 @@ var config = {
 gulp.task('scripts', ['scripts-lint'], function() {
   return gulp.src(config.src)
     .pipe(babel({ modules: 'ignore', blacklist: ['useStrict'] }))
-    .pipe(ngAnnotate({ single_quotes: true, add: true }))
     .pipe(concat(config.name))
     .pipe(wrapUmd(config.umd))
     .pipe(uglify({

@@ -1,8 +1,6 @@
 
 /**
  * OAuth interceptor.
- *
- * @ngInject
  */
 
 function oauthInterceptor($q, $rootScope, OAuthToken) {
@@ -40,6 +38,8 @@ function oauthInterceptor($q, $rootScope, OAuthToken) {
     }
   };
 }
+
+oauthInterceptor.$inject = ['$q', '$rootScope', 'OAuthToken'];
 
 /**
  * Export `oauthInterceptor`.

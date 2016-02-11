@@ -37,8 +37,6 @@ function OAuthTokenProvider() {
 
   /**
    * OAuthToken service.
-   *
-   * @ngInject
    */
 
   this.$get = function($cookies) {
@@ -107,6 +105,8 @@ function OAuthTokenProvider() {
 
     return new OAuthToken();
   };
+
+  this.$get.$inject = ['$cookies'];
 }
 
 /**
