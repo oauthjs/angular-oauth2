@@ -1,5 +1,8 @@
 ## Changelog
 
+### upcoming / 2016-02-12
+- [#80](https://github.com/seegno/angular-oauth2/pull/80) Reintroduce authorization header to be overridden (@ruipenso)
+
 ### 3.1.1 / 2016-02-12
 - [#79](https://github.com/seegno/angular-oauth2/pull/79) Update dependencies (@ruipenso)
 

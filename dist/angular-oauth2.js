@@ -1,6 +1,6 @@
 /**
  * angular-oauth2 - Angular OAuth2
- * @version v3.1.1
+ * @version v4.0.0
  * @link https://github.com/seegno/angular-oauth2
  * @license MIT
  */
@@ -21,8 +21,8 @@
     function oauthInterceptor($q, $rootScope, OAuthToken) {
         return {
             request: function request(config) {
-                if (OAuthToken.getAuthorizationHeader()) {
-                    config.headers = config.headers || {};
+                config.headers = config.headers || {};
+                if (!config.headers.hasOwnProperty("Authorization") && OAuthToken.getAuthorizationHeader()) {
                     config.headers.Authorization = OAuthToken.getAuthorizationHeader();
                 }
                 return config;
