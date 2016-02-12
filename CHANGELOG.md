@@ -1,6 +1,9 @@
 ## Changelog
 
-### upcoming / 2016-02-10
+### 3.1.1 / 2016-02-12
+- [#79](https://github.com/seegno/angular-oauth2/pull/79) Update dependencies (@ruipenso)
+
+### 3.1.0 / 2016-02-10
 - [#78](https://github.com/seegno/angular-oauth2/pull/78) Update OAuth methods to allow `data` and `options` override (@ruipenso)
 - [#71](https://github.com/seegno/angular-oauth2/pull/71) Add `client_id` and `client_secret` on revoke_token (@tinogomes)
 - [#77](https://github.com/seegno/angular-oauth2/pull/77) Update interceptor to allow authorization header to be overridden (@ruipenso)
