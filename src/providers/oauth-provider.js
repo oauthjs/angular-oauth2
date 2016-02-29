@@ -122,7 +122,7 @@ function OAuthProvider() {
 
         data = queryString.stringify(data);
 
-        options = angular.extend({
+        options = angular.merge({
           headers: {
             'Authorization': undefined,
             'Content-Type': 'application/x-www-form-urlencoded'
