@@ -26,7 +26,7 @@ var requiredKeys = [
  */
 
 function OAuthProvider() {
-  var config;
+  var defaultConfig;
 
   /**
    * Configure.
@@ -36,7 +36,7 @@ function OAuthProvider() {
 
   this.configure = function(params) {
     // Can only be configured once.
-    if (config) {
+    if (defaultConfig) {
       throw new Error('Already configured.');
     }
 
@@ -46,31 +46,30 @@ function OAuthProvider() {
     }
 
     // Extend default configuration.
-    config = angular.extend({}, defaults, params);
+    defaultConfig = angular.extend({}, defaults, params);
 
     // Check if all required keys are set.
     angular.forEach(requiredKeys, (key) => {
-      if (!config[key]) {
+      if (!defaultConfig[key]) {
         throw new Error(`Missing parameter: ${key}.`);
       }
     });
 
     // Remove `baseUrl` trailing slash.
-    if('/' === config.baseUrl.substr(-1)) {
-      config.baseUrl = config.baseUrl.slice(0, -1);
+    if('/' === defaultConfig.baseUrl.substr(-1)) {
+      defaultConfig.baseUrl = defaultConfig.baseUrl.slice(0, -1);
     }
 
     // Add `grantPath` facing slash.
-    if('/' !== config.grantPath[0]) {
-      config.grantPath = `/${config.grantPath}`;
+    if('/' !== defaultConfig.grantPath[0]) {
+      defaultConfig.grantPath = `/${defaultConfig.grantPath}`;
     }
 
     // Add `revokePath` facing slash.
-    if('/' !== config.revokePath[0]) {
-      config.revokePath = `/${config.revokePath}`;
+    if('/' !== defaultConfig.revokePath[0]) {
+      defaultConfig.revokePath = `/${defaultConfig.revokePath}`;
     }
-
-    return config;
+    return defaultConfig;
   };
 
   /**
@@ -85,7 +84,7 @@ function OAuthProvider() {
        */
 
       constructor() {
-        if (!config) {
+        if (!defaultConfig) {
           throw new Error('`OAuthProvider` must be configured first.');
         }
       }
@@ -110,7 +109,10 @@ function OAuthProvider() {
        * @return {promise} A response promise.
        */
 
-      getAccessToken(data, options) {
+      getAccessToken(data, options, config) {
+        //Override default Oauth config
+        config = angular.extend({}, defaultConfig, config);
+
         data = angular.extend({
           client_id: config.clientId,
           grant_type: 'password'
@@ -145,7 +147,10 @@ function OAuthProvider() {
        * @return {promise} A response promise.
        */
 
-      getRefreshToken(data, options) {
+      getRefreshToken(data, options, config) {
+        //Override default Oauth config
+        config = angular.extend({}, defaultConfig, config);
+
         data = angular.extend({
           client_id: config.clientId,
           grant_type: 'refresh_token',
@@ -181,7 +186,10 @@ function OAuthProvider() {
        * @return {promise} A response promise.
        */
 
-      revokeToken(data, options) {
+      revokeToken(data, options, config) {
+        //Override default Oauth config
+        config = angular.extend(defaultConfig, config);
+
         var refreshToken = OAuthToken.getRefreshToken();
 
         data = angular.extend({

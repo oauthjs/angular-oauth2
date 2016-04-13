@@ -216,6 +216,26 @@ describe('OAuthProvider', function() {
         $httpBackend.verifyNoOutstandingExpectation();
         $httpBackend.verifyNoOutstandingRequest();
       }));
+
+      it('should allow to override oauth server config', inject(function($httpBackend, OAuth, OAuthToken) {
+        var config = {
+          baseUrl: 'https://new.website.com',
+          grantPath: '/oauth2/token',
+        };
+
+        $httpBackend.expectPOST(config.baseUrl + config.grantPath, data)
+          .respond({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
+
+        OAuth.getAccessToken({
+          username: 'foo',
+          password: 'bar'
+        }, {}, config);
+
+        $httpBackend.flush();
+
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+      }));
     });
 
     describe('refreshToken()', function() {
@@ -293,9 +313,26 @@ describe('OAuthProvider', function() {
             expires_in: 3600,
             refresh_token: 'biz'
           });
-        }).catch(function() {
-          should.fail();
         });
+
+        $httpBackend.flush();
+
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+      }));
+
+      it('should allow to override oauth server config', inject(function($httpBackend, OAuth, OAuthToken) {
+        var config = {
+          baseUrl: 'https://new.website.com',
+          grantPath: '/oauth2/token/new',
+        };
+
+        OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
+
+        $httpBackend.expectPOST(config.baseUrl + config.grantPath, queryString.stringify(data))
+          .respond({ token_type: 'bearer', access_token: 'qux', expires_in: 3600, refresh_token: 'biz' });
+
+        OAuth.getRefreshToken(data, {}, config);
 
         $httpBackend.flush();
 
@@ -382,6 +419,32 @@ describe('OAuthProvider', function() {
         }).catch(function() {
           should.fail();
         });
+
+        $httpBackend.flush();
+
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+      }));
+
+      it('should allow to override oauth server config', inject(function($httpBackend, OAuth, OAuthToken) {
+        var data = queryString.stringify({
+          client_id: defaults.clientId,
+          token: 'bar',
+          token_type_hint: 'refresh_token',
+          client_secret: defaults.clientSecret
+        });
+
+        var config = {
+          baseUrl: 'https://new.website.com',
+          revokePath: '/oauth2/revoke/new',
+        };
+
+        OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
+
+        $httpBackend.expectPOST(config.baseUrl + config.revokePath, data)
+          .respond(200);
+
+        OAuth.revokeToken(data, {}, config);
 
         $httpBackend.flush();
 
