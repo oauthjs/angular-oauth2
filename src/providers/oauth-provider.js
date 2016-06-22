@@ -91,8 +91,7 @@ function OAuthProvider() {
       }
 
       /**
-       * Verifies if the `user` is authenticated or not based on the `token`
-       * cookie.
+       * Verifies if the `user` is authenticated or not based on the token.
        *
        * @return {boolean}
        */
@@ -102,7 +101,7 @@ function OAuthProvider() {
       }
 
       /**
-       * Retrieves the `access_token` and stores the `response.data` on cookies
+       * Retrieves the `access_token` and stores the `response.data` in session
        * using the `OAuthToken`.
        *
        * @param {object} data - Request content, e.g., `username` and `password`.
@@ -137,7 +136,7 @@ function OAuthProvider() {
       }
 
       /**
-       * Retrieves the `refresh_token` and stores the `response.data` on cookies
+       * Retrieves the `refresh_token` and stores the `response.data` in session
        * using the `OAuthToken`.
        *
        * @param {object} data - Request content.
@@ -173,7 +172,7 @@ function OAuthProvider() {
       }
 
       /**
-       * Revokes the `token` and removes the stored `token` from cookies
+       * Revokes the `token` and removes the stored `token` in session
        * using the `OAuthToken`.
        *
        * @param {object} data - Request content.

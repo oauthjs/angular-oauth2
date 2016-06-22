@@ -11,10 +11,7 @@ import angular from 'angular';
 
 function OAuthTokenProvider() {
   var config = {
-    name: 'token',
-    options: {
-      secure: true
-    }
+    name: 'token'
   };
 
   /**
@@ -39,7 +36,7 @@ function OAuthTokenProvider() {
    * OAuthToken service.
    */
 
-  this.$get = function($cookies) {
+  this.$get = function() {
     class OAuthToken {
 
       /**
@@ -47,7 +44,7 @@ function OAuthTokenProvider() {
        */
 
       setToken(data) {
-        return $cookies.putObject(config.name, data, config.options);
+        sessionStorage.setItem(config.name, JSON.stringify(data));
       }
 
       /**
@@ -55,7 +52,13 @@ function OAuthTokenProvider() {
        */
 
       getToken() {
-        return $cookies.getObject(config.name);
+        var token = JSON.parse(sessionStorage.getItem(config.name));
+
+        if (null === token) {
+          return;
+        }
+
+        return token;
       }
 
       /**
@@ -99,14 +102,12 @@ function OAuthTokenProvider() {
        */
 
       removeToken() {
-        return $cookies.remove(config.name, config.options);
+        sessionStorage.removeItem(config.name);
       }
     }
 
     return new OAuthToken();
   };
-
-  this.$get.$inject = ['$cookies'];
 }
 
 /**
