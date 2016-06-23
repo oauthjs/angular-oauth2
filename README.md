@@ -2,6 +2,27 @@
 
 AngularJS OAuth2 authentication module written in ES6.
 
+<<<<<<< HEAD
+Currently `angular-oauth2` only uses the [Resouce Owner Password Credential Grant](https://tools.ietf.org/html/rfc6749#section-4.3), i.e, using a credentials combination (username, password) we'll request an access token (using `grant_type='password'`) which, in case of success, will typically return a response such as:
+=======
+Currently `angular-oauth2` only uses the “Resource owner password credentials grant”, i.e, using a credentials combination (username, password) we’ll request an access token (using `grant_type=‘password’`) which, in case of success, will return a response such as:
+>>>>>>> 6a36797... Detail the authentication mechanism used
+
+```
+{
+  "access_token": "foobar",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "refresh_token": "foobiz"
+}
+```
+<<<<<<< HEAD
+Internally we'll automatically store it as a cookie and it will be used in every request adding an `Authorization` header: `Authorization: 'Bearer foobar'`.
+=======
+Internally we’ll automatically save it in a form of a cookie and it will be used in every request adding an `Authorization` header: `Authorization: ‘Bearer foobar’`.
+
+>>>>>>> 6a36797... Detail the authentication mechanism used
+
 ---
 
 ## Installation
