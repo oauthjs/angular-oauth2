@@ -13,7 +13,7 @@ describe('OAuthProvider', function() {
   };
 
   describe('configure()', function() {
-    var provider;
+    var provider, testSuite;
 
     beforeEach(function() {
       angular.module('angular-oauth2.test', [])
@@ -34,17 +34,6 @@ describe('OAuthProvider', function() {
       } catch(e) {
         e.should.be.an.instanceOf(TypeError);
         e.message.should.match(/config/);
-      }
-    });
-
-    it('should throw an error if already configured', function() {
-      try {
-        provider.configure(defaults);
-        provider.configure(defaults);
-
-        should.fail();
-      } catch(e) {
-        e.should.be.an.instanceOf(Error);
       }
     });
 
@@ -137,6 +126,93 @@ describe('OAuthProvider', function() {
       OAuthToken.removeToken();
     }));
 
+    describe('configure()', function() {
+      it('should throw an error if configuration is not an object', inject(function(OAuth) {
+        try {
+          OAuth.configure(false);
+
+          should.fail();
+        } catch(e) {
+          e.should.be.an.instanceOf(TypeError);
+          e.message.should.match(/config/);
+        }
+      }));
+      
+      it('should throw an error if `baseUrl` param is empty', inject(function(OAuth) {
+        try {
+          OAuth.configure(_.omit(defaults, 'baseUrl'));
+
+          should.fail();
+        } catch(e) {
+          e.should.be.an.instanceOf(Error);
+          e.message.should.match(/baseUrl/);
+        }
+      }));
+
+      it('should throw an error if `clientId` param is empty', inject(function(OAuth) {
+        try {
+          OAuth.configure(_.omit(defaults, 'clientId'));
+
+          should.fail();
+        } catch(e) {
+          e.should.be.an.instanceOf(Error);
+          e.message.should.match(/clientId/);
+        }
+      }));
+
+      it('should not throw an error if `clientSecret` param is empty', inject(function(OAuth) {
+        var config = OAuth.configure(_.omit(defaults, 'clientSecret'));
+
+        (null === config.clientSecret).should.true;
+      }));
+
+      it('should throw an error if `grantPath` param is empty', inject(function(OAuth) {
+        try {
+          OAuth.configure(_.defaults({ grantPath: null }, defaults));
+
+          should.fail();
+        } catch(e) {
+          e.should.be.an.instanceOf(Error);
+          e.message.should.match(/grantPath/);
+        }
+      }));
+
+      it('should remove trailing slash from `baseUrl`', inject(function(OAuth) {
+        var config = OAuth.configure(_.defaults({
+          baseUrl: 'https://api.website.com/'
+        }, defaults));
+
+        config.baseUrl.should.equal('https://api.website.com');
+      }));
+
+      it('should add facing slash from `grantPath`', inject(function(OAuth) {
+        var config = OAuth.configure(_.defaults({
+          grantPath: 'oauth2/token'
+        }, defaults));
+
+        config.grantPath.should.equal('/oauth2/token');
+      }));
+
+      it('should throw an error if `revokePath` param is empty', inject(function(OAuth) {
+        try {
+          OAuth.configure(_.defaults({ revokePath: null }, defaults));
+
+          should.fail();
+        } catch(e) {
+          e.should.be.an.instanceOf(Error);
+          e.message.should.match(/revokePath/);
+        }
+      }));
+
+      it('should add facing slash from `revokePath`', inject(function(OAuth) {
+        var config = OAuth.configure(_.defaults({
+          revokePath: 'oauth2/revoke'
+        }, defaults));
+
+        config.revokePath.should.equal('/oauth2/revoke');
+      }));
+    });
+
     describe('isAuthenticated()', function() {
       it('should be true when there is a stored `token` cookie', inject(function(OAuth, OAuthToken) {
         OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
@@ -210,26 +286,6 @@ describe('OAuthProvider', function() {
         }).catch(function() {
           should.fail();
         });
-
-        $httpBackend.flush();
-
-        $httpBackend.verifyNoOutstandingExpectation();
-        $httpBackend.verifyNoOutstandingRequest();
-      }));
-
-      it('should allow to override oauth server config', inject(function($httpBackend, OAuth, OAuthToken) {
-        var config = {
-          baseUrl: 'https://new.website.com',
-          grantPath: '/oauth2/token',
-        };
-
-        $httpBackend.expectPOST(config.baseUrl + config.grantPath, data)
-          .respond({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
-
-        OAuth.getAccessToken({
-          username: 'foo',
-          password: 'bar'
-        }, {}, config);
 
         $httpBackend.flush();
 
@@ -320,25 +376,6 @@ describe('OAuthProvider', function() {
         $httpBackend.verifyNoOutstandingExpectation();
         $httpBackend.verifyNoOutstandingRequest();
       }));
-
-      it('should allow to override oauth server config', inject(function($httpBackend, OAuth, OAuthToken) {
-        var config = {
-          baseUrl: 'https://new.website.com',
-          grantPath: '/oauth2/token/new',
-        };
-
-        OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
-
-        $httpBackend.expectPOST(config.baseUrl + config.grantPath, queryString.stringify(data))
-          .respond({ token_type: 'bearer', access_token: 'qux', expires_in: 3600, refresh_token: 'biz' });
-
-        OAuth.getRefreshToken(data, {}, config);
-
-        $httpBackend.flush();
-
-        $httpBackend.verifyNoOutstandingExpectation();
-        $httpBackend.verifyNoOutstandingRequest();
-      }));
     });
 
     describe('revokeToken()', function () {
@@ -419,32 +456,6 @@ describe('OAuthProvider', function() {
         }).catch(function() {
           should.fail();
         });
-
-        $httpBackend.flush();
-
-        $httpBackend.verifyNoOutstandingExpectation();
-        $httpBackend.verifyNoOutstandingRequest();
-      }));
-
-      it('should allow to override oauth server config', inject(function($httpBackend, OAuth, OAuthToken) {
-        var data = queryString.stringify({
-          client_id: defaults.clientId,
-          token: 'bar',
-          token_type_hint: 'refresh_token',
-          client_secret: defaults.clientSecret
-        });
-
-        var config = {
-          baseUrl: 'https://new.website.com',
-          revokePath: '/oauth2/revoke/new',
-        };
-
-        OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
-
-        $httpBackend.expectPOST(config.baseUrl + config.revokePath, data)
-          .respond(200);
-
-        OAuth.revokeToken(data, {}, config);
 
         $httpBackend.flush();
 

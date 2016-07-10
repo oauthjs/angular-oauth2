@@ -29,46 +29,51 @@ function OAuthProvider() {
   var defaultConfig;
 
   /**
-   * Configure.
-   *
-   * @param {object} params - An `object` of params to extend.
+   * @private
+   * sanitize configuration parameters
+   * @param {object} an `object` of params to sanitize
+   * @return {object} an sanitize version of the params
    */
-
-  this.configure = function(params) {
-    // Can only be configured once.
-    if (defaultConfig) {
-      throw new Error('Already configured.');
-    }
-
-    // Check if is an `object`.
+  const sanitizeConfigParams = (params) => {
     if (!(params instanceof Object)) {
       throw new TypeError('Invalid argument: `config` must be an `Object`.');
     }
 
     // Extend default configuration.
-    defaultConfig = angular.extend({}, defaults, params);
+    const config = angular.extend({}, defaults, params);
 
     // Check if all required keys are set.
     angular.forEach(requiredKeys, (key) => {
-      if (!defaultConfig[key]) {
+      if (!config[key]) {
         throw new Error(`Missing parameter: ${key}.`);
       }
     });
 
     // Remove `baseUrl` trailing slash.
-    if('/' === defaultConfig.baseUrl.substr(-1)) {
-      defaultConfig.baseUrl = defaultConfig.baseUrl.slice(0, -1);
+    if ('/' === config.baseUrl.substr(-1)) {
+      config.baseUrl = config.baseUrl.slice(0, -1);
     }
 
     // Add `grantPath` facing slash.
-    if('/' !== defaultConfig.grantPath[0]) {
-      defaultConfig.grantPath = `/${defaultConfig.grantPath}`;
+    if ('/' !== config.grantPath[0]) {
+      config.grantPath = `/${config.grantPath}`;
     }
 
     // Add `revokePath` facing slash.
-    if('/' !== defaultConfig.revokePath[0]) {
-      defaultConfig.revokePath = `/${defaultConfig.revokePath}`;
+    if ('/' !== config.revokePath[0]) {
+      config.revokePath = `/${config.revokePath}`;
     }
+
+    return config;
+  };
+  
+  /**
+   * Configure.
+   *
+   * @param {object} params - An `object` of params to extend.
+   */
+  this.configure = function(params) {
+    defaultConfig = sanitizeConfigParams(params);
     return defaultConfig;
   };
 
@@ -88,6 +93,17 @@ function OAuthProvider() {
           throw new Error('`OAuthProvider` must be configured first.');
         }
       }
+      
+      /**
+       * Configure OAuth service during runtime
+       *
+       * @param {Object} params - An object of params to extend
+       */
+      configure(params) {
+        defaultConfig = sanitizeConfigParams(params);
+        return defaultConfig;
+      }
+
 
       /**
        * Verifies if the `user` is authenticated or not based on the `token`
@@ -109,17 +125,14 @@ function OAuthProvider() {
        * @return {promise} A response promise.
        */
 
-      getAccessToken(data, options, config) {
-        //Override default Oauth config
-        config = angular.extend({}, defaultConfig, config);
-
+      getAccessToken(data, options) {
         data = angular.extend({
-          client_id: config.clientId,
+          client_id: defaultConfig.clientId,
           grant_type: 'password'
         }, data);
 
-        if (null !== config.clientSecret) {
-          data.client_secret = config.clientSecret;
+        if (null !== defaultConfig.clientSecret) {
+          data.client_secret = defaultConfig.clientSecret;
         }
 
         data = queryString.stringify(data);
@@ -131,7 +144,7 @@ function OAuthProvider() {
           }
         }, options);
 
-        return $http.post(`${config.baseUrl}${config.grantPath}`, data, options).then((response) => {
+        return $http.post(`${defaultConfig.baseUrl}${defaultConfig.grantPath}`, data, options).then((response) => {
           OAuthToken.setToken(response.data);
 
           return response;
@@ -147,18 +160,15 @@ function OAuthProvider() {
        * @return {promise} A response promise.
        */
 
-      getRefreshToken(data, options, config) {
-        //Override default Oauth config
-        config = angular.extend({}, defaultConfig, config);
-
+      getRefreshToken(data, options) {
         data = angular.extend({
-          client_id: config.clientId,
+          client_id: defaultConfig.clientId,
           grant_type: 'refresh_token',
           refresh_token: OAuthToken.getRefreshToken(),
         }, data);
 
-        if (null !== config.clientSecret) {
-          data.client_secret = config.clientSecret;
+        if (null !== defaultConfig.clientSecret) {
+          data.client_secret = defaultConfig.clientSecret;
         }
 
         data = queryString.stringify(data);
@@ -170,7 +180,7 @@ function OAuthProvider() {
           }
         }, options);
 
-        return $http.post(`${config.baseUrl}${config.grantPath}`, data, options).then((response) => {
+        return $http.post(`${defaultConfig.baseUrl}${defaultConfig.grantPath}`, data, options).then((response) => {
           OAuthToken.setToken(response.data);
 
           return response;
@@ -186,20 +196,17 @@ function OAuthProvider() {
        * @return {promise} A response promise.
        */
 
-      revokeToken(data, options, config) {
-        //Override default Oauth config
-        config = angular.extend(defaultConfig, config);
-
+      revokeToken(data, options) {
         var refreshToken = OAuthToken.getRefreshToken();
 
         data = angular.extend({
-          client_id: config.clientId,
+          client_id: defaultConfig.clientId,
           token: refreshToken ? refreshToken : OAuthToken.getAccessToken(),
           token_type_hint: refreshToken ? 'refresh_token' : 'access_token'
         }, data);
 
-        if (null !== config.clientSecret) {
-          data.client_secret = config.clientSecret;
+        if (null !== defaultConfig.clientSecret) {
+          data.client_secret = defaultConfig.clientSecret;
         }
 
         data = queryString.stringify(data);
@@ -210,7 +217,7 @@ function OAuthProvider() {
           }
         }, options);
 
-        return $http.post(`${config.baseUrl}${config.revokePath}`, data, options).then((response) => {
+        return $http.post(`${defaultConfig.baseUrl}${defaultConfig.revokePath}`, data, options).then((response) => {
           OAuthToken.removeToken();
 
           return response;

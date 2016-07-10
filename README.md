@@ -44,6 +44,8 @@ angular.module('myApp', ['angular-oauth2'])
   }]);
 ```
 
+ps: You can also configure service at runtime, in case you retrieve oauth server configuration from a ajax request.
+
 ###### 4. Catch `OAuth` errors and do something with them (optional):
 
 ```js
@@ -84,6 +86,18 @@ OAuthProvider.configure({
 
 #### OAuth
 
+Update configuration defaults
+
+```js
+OAuth.configure({
+  baseUrl: null,
+  clientId: null,
+  clientSecret: null,
+  grantPath: '/oauth2/token',
+  revokePath: '/oauth2/revoke'
+});
+
+```
 Check authentication status:
 
 ```js
