@@ -60,9 +60,10 @@ describe('OAuthProvider', function() {
     });
 
     it('should not throw an error if `clientSecret` param is empty', function() {
-      var config = provider.configure(_.omit(defaults, 'clientSecret'));
-
-      (null === config.clientSecret).should.true;
+      try {
+        provider.configure(_.omit(defaults, 'clientSecret'));
+        should.not.fail();
+      } catch(e) {}
     });
 
     it('should throw an error if `grantPath` param is empty', function() {
@@ -77,19 +78,19 @@ describe('OAuthProvider', function() {
     });
 
     it('should remove trailing slash from `baseUrl`', function() {
-      var config = provider.configure(_.defaults({
+      provider.configure(_.defaults({
         baseUrl: 'https://api.website.com/'
       }, defaults));
 
-      config.baseUrl.should.equal('https://api.website.com');
+      provider.defaultConfig.baseUrl.should.equal('https://api.website.com');
     });
 
     it('should add facing slash from `grantPath`', function() {
-      var config = provider.configure(_.defaults({
+      provider.configure(_.defaults({
         grantPath: 'oauth2/token'
       }, defaults));
 
-      config.grantPath.should.equal('/oauth2/token');
+      provider.defaultConfig.grantPath.should.equal('/oauth2/token');
     });
 
     it('should throw an error if `revokePath` param is empty', function() {
@@ -104,11 +105,11 @@ describe('OAuthProvider', function() {
     });
 
     it('should add facing slash from `revokePath`', function() {
-      var config = provider.configure(_.defaults({
+      provider.configure(_.defaults({
         revokePath: 'oauth2/revoke'
       }, defaults));
 
-      config.revokePath.should.equal('/oauth2/revoke');
+      provider.defaultConfig.revokePath.should.equal('/oauth2/revoke');
     });
   });
 
@@ -125,6 +126,11 @@ describe('OAuthProvider', function() {
     afterEach(inject(function(OAuthToken) {
       OAuthToken.removeToken();
     }));
+    describe('construtor', function() {
+      it('should set initialize config with data passed in configure', inject(function(OAuth) {
+        OAuth.config.should.eql(defaults);
+      }))
+    })
 
     describe('configure()', function() {
       it('should throw an error if configuration is not an object', inject(function(OAuth) {
@@ -161,9 +167,11 @@ describe('OAuthProvider', function() {
       }));
 
       it('should not throw an error if `clientSecret` param is empty', inject(function(OAuth) {
-        var config = OAuth.configure(_.omit(defaults, 'clientSecret'));
-
-        (null === config.clientSecret).should.true;
+        try{
+          OAuth.configure(_.omit(defaults, 'clientSecret'));
+          
+          should.not.fail();
+        } catch(e) {}
       }));
 
       it('should throw an error if `grantPath` param is empty', inject(function(OAuth) {
@@ -178,19 +186,19 @@ describe('OAuthProvider', function() {
       }));
 
       it('should remove trailing slash from `baseUrl`', inject(function(OAuth) {
-        var config = OAuth.configure(_.defaults({
+        OAuth.configure(_.defaults({
           baseUrl: 'https://api.website.com/'
         }, defaults));
 
-        config.baseUrl.should.equal('https://api.website.com');
+        OAuth.config.baseUrl.should.equal('https://api.website.com');
       }));
 
       it('should add facing slash from `grantPath`', inject(function(OAuth) {
-        var config = OAuth.configure(_.defaults({
+        OAuth.configure(_.defaults({
           grantPath: 'oauth2/token'
         }, defaults));
 
-        config.grantPath.should.equal('/oauth2/token');
+        OAuth.config.grantPath.should.equal('/oauth2/token');
       }));
 
       it('should throw an error if `revokePath` param is empty', inject(function(OAuth) {
@@ -205,11 +213,11 @@ describe('OAuthProvider', function() {
       }));
 
       it('should add facing slash from `revokePath`', inject(function(OAuth) {
-        var config = OAuth.configure(_.defaults({
+        OAuth.configure(_.defaults({
           revokePath: 'oauth2/revoke'
         }, defaults));
 
-        config.revokePath.should.equal('/oauth2/revoke');
+        OAuth.config.revokePath.should.equal('/oauth2/revoke');
       }));
     });
 

@@ -26,7 +26,6 @@ var requiredKeys = [
  */
 
 function OAuthProvider() {
-  var defaultConfig;
 
   /**
    * @private
@@ -72,9 +71,8 @@ function OAuthProvider() {
    *
    * @param {object} params - An `object` of params to extend.
    */
-  this.configure = function(params) {
-    defaultConfig = sanitizeConfigParams(params);
-    return defaultConfig;
+  this.configure = (params) => {
+    this.defaultConfig = sanitizeConfigParams(params);
   };
 
   /**
@@ -88,10 +86,8 @@ function OAuthProvider() {
        * Check if `OAuthProvider` is configured.
        */
 
-      constructor() {
-        if (!defaultConfig) {
-          throw new Error('`OAuthProvider` must be configured first.');
-        }
+      constructor(config) {
+        this.config = config;
       }
       
       /**
@@ -100,8 +96,7 @@ function OAuthProvider() {
        * @param {Object} params - An object of params to extend
        */
       configure(params) {
-        defaultConfig = sanitizeConfigParams(params);
-        return defaultConfig;
+        this.config = sanitizeConfigParams(params);
       }
 
 
@@ -127,12 +122,12 @@ function OAuthProvider() {
 
       getAccessToken(data, options) {
         data = angular.extend({
-          client_id: defaultConfig.clientId,
+          client_id: this.config.clientId,
           grant_type: 'password'
         }, data);
 
-        if (null !== defaultConfig.clientSecret) {
-          data.client_secret = defaultConfig.clientSecret;
+        if (null !== this.config.clientSecret) {
+          data.client_secret = this.config.clientSecret;
         }
 
         data = queryString.stringify(data);
@@ -144,7 +139,7 @@ function OAuthProvider() {
           }
         }, options);
 
-        return $http.post(`${defaultConfig.baseUrl}${defaultConfig.grantPath}`, data, options).then((response) => {
+        return $http.post(`${this.config.baseUrl}${this.config.grantPath}`, data, options).then((response) => {
           OAuthToken.setToken(response.data);
 
           return response;
@@ -162,13 +157,13 @@ function OAuthProvider() {
 
       getRefreshToken(data, options) {
         data = angular.extend({
-          client_id: defaultConfig.clientId,
+          client_id: this.config.clientId,
           grant_type: 'refresh_token',
           refresh_token: OAuthToken.getRefreshToken(),
         }, data);
 
-        if (null !== defaultConfig.clientSecret) {
-          data.client_secret = defaultConfig.clientSecret;
+        if (null !== this.config.clientSecret) {
+          data.client_secret = this.config.clientSecret;
         }
 
         data = queryString.stringify(data);
@@ -180,7 +175,7 @@ function OAuthProvider() {
           }
         }, options);
 
-        return $http.post(`${defaultConfig.baseUrl}${defaultConfig.grantPath}`, data, options).then((response) => {
+        return $http.post(`${this.config.baseUrl}${this.config.grantPath}`, data, options).then((response) => {
           OAuthToken.setToken(response.data);
 
           return response;
@@ -200,13 +195,13 @@ function OAuthProvider() {
         var refreshToken = OAuthToken.getRefreshToken();
 
         data = angular.extend({
-          client_id: defaultConfig.clientId,
+          client_id: this.config.clientId,
           token: refreshToken ? refreshToken : OAuthToken.getAccessToken(),
           token_type_hint: refreshToken ? 'refresh_token' : 'access_token'
         }, data);
 
-        if (null !== defaultConfig.clientSecret) {
-          data.client_secret = defaultConfig.clientSecret;
+        if (null !== this.config.clientSecret) {
+          data.client_secret = this.config.clientSecret;
         }
 
         data = queryString.stringify(data);
@@ -217,7 +212,7 @@ function OAuthProvider() {
           }
         }, options);
 
-        return $http.post(`${defaultConfig.baseUrl}${defaultConfig.revokePath}`, data, options).then((response) => {
+        return $http.post(`${this.config.baseUrl}${this.config.revokePath}`, data, options).then((response) => {
           OAuthToken.removeToken();
 
           return response;
@@ -225,7 +220,7 @@ function OAuthProvider() {
       }
     }
 
-    return new OAuth();
+    return new OAuth(this.defaultConfig);
   };
 
   this.$get.$inject = ['$http', 'OAuthToken'];
