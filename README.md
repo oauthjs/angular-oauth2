@@ -31,7 +31,7 @@ If you're using `bower` they will be automatically downloaded upon installing th
 <script src="<VENDOR_FOLDER>/angular-oauth2/dist/angular-oauth2.min.js"></script>
 ```
 
-###### 3. Configure `OAuth` (required) and `OAuthToken` (optional):
+###### 3. Configure `OAuth` (optional) and `OAuthToken` (optional):
 
 ```js
 angular.module('myApp', ['angular-oauth2'])
@@ -44,7 +44,18 @@ angular.module('myApp', ['angular-oauth2'])
   }]);
 ```
 
-ps: You can also configure service at runtime, in case you retrieve oauth server configuration from a ajax request.
+You can also configure `OAuth` service in a `.run()`block, in case you retrieve the Oauth server configuration from a ajax request.
+
+```js
+angular.module('myApp', ['angular-oauth2'])
+  .run(['OAuth', function(OAuth) {
+    OAuth.configure({
+      baseUrl: 'https://api.website.com',
+      clientId: 'CLIENT_ID',
+      clientSecret: 'CLIENT_SECRET' // optional
+    });
+  }]);
+```
 
 ###### 4. Catch `OAuth` errors and do something with them (optional):
 
