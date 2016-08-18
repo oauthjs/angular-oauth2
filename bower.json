@@ -1,18 +1,19 @@
 {
   "name": "angular-oauth2",
-  "version": "4.0.0",
-  "description": "AngularJS OAuth2",
-  "main": "./dist/angular-oauth2.js",
+  "version": "4.1.0",
+  "description": "Angular OAuth using LocalForage",
+  "main": "dist/angular-oauth2.js",
   "authors": [
-    "Seegno <projects@seegno.com>"
+    "Martin <dothide@gmail.com>"
   ],
   "keywords": [
     "AngularJS",
     "Authentication",
-    "OAuth2"
+    "OAuth2",
+    "LocalForage"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/seegno/angular-oauth2",
+  "homepage": "https://github.com/DotHide/angular-oauth2",
   "ignore": [
     "**/.*",
     "bower_components",
@@ -20,11 +21,12 @@
     "karma.conf.js",
     "node_modules",
     "package.json",
-    "test"
+    "test",
+    "src"
   ],
   "dependencies": {
     "angular": "^1.4.0",
-    "angular-cookies": "^1.4.0",
-    "query-string": "^1.0.0"
+    "query-string": "^1.0.0",
+    "angular-localforage": "^1.3.1"
   }
 }

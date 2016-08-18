@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -39,7 +38,7 @@ function OAuthTokenProvider() {
    * OAuthToken service.
    */
 
-  this.$get = function($cookies) {
+  this.$get = function($localForage) {
     class OAuthToken {
 
       /**
@@ -47,7 +46,8 @@ function OAuthTokenProvider() {
        */
 
       setToken(data) {
-        return $cookies.putObject(config.name, data, config.options);
+        // return $cookies.putObject(config.name, data, config.options);
+        return $localForage.setItem(config.name, data);
       }
 
       /**
@@ -55,7 +55,11 @@ function OAuthTokenProvider() {
        */
 
       getToken() {
-        return $cookies.getObject(config.name);
+        // return $cookies.getObject(config.name);
+        return $localForage.getItem(config.name)
+          .then((data) => {
+            return data;
+          });
       }
 
       /**
@@ -63,7 +67,10 @@ function OAuthTokenProvider() {
        */
 
       getAccessToken() {
-        return this.getToken() ? this.getToken().access_token : undefined;
+        return this.getToken()
+          .then((token) => {
+            return token ? token.access_token : undefined;
+          });
       }
 
       /**
@@ -71,11 +78,21 @@ function OAuthTokenProvider() {
        */
 
       getAuthorizationHeader() {
-        if (!(this.getTokenType() && this.getAccessToken())) {
-          return;
-        }
-
-        return `${this.getTokenType().charAt(0).toUpperCase() + this.getTokenType().substr(1)} ${this.getAccessToken()}`;
+        var token_type, access_token;
+        return this.getTokenType()
+          .then((tt) => {
+            token_type = tt;
+            return this.getAccessToken();
+          })
+          .then((at) => {
+            access_token = at;
+            if (!(token_type && access_token)) {
+              return null;
+            } else {
+              return `${token_type.charAt(0).toUpperCase() + token_type.substr(1)} ${access_token}`;
+            }
+          });
+        // return `${this.getTokenType().charAt(0).toUpperCase() + this.getTokenType().substr(1)} ${this.getAccessToken()}`;
       }
 
       /**
@@ -83,7 +100,11 @@ function OAuthTokenProvider() {
        */
 
       getRefreshToken() {
-        return this.getToken() ? this.getToken().refresh_token : undefined;
+        return this.getToken()
+          .then((token) => {
+            return token ? token
+              .refresh_token : undefined;
+          });
       }
 
       /**
@@ -91,7 +112,11 @@ function OAuthTokenProvider() {
        */
 
       getTokenType() {
-        return this.getToken() ? this.getToken().token_type : undefined;
+        return this.getToken()
+          .then((token) => {
+            return token ? token
+              .token_type : undefined;
+          });
       }
 
       /**
@@ -99,14 +124,15 @@ function OAuthTokenProvider() {
        */
 
       removeToken() {
-        return $cookies.remove(config.name, config.options);
+        // return $cookies.remove(config.name, config.options);
+        return $localForage.removeItem(config.name);
       }
     }
 
     return new OAuthToken();
   };
 
-  this.$get.$inject = ['$cookies'];
+  this.$get.$inject = ['$localForage'];
 }
 
 /**
