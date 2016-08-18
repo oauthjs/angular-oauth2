@@ -21,7 +21,8 @@
     "karma.conf.js",
     "node_modules",
     "package.json",
-    "test"
+    "test",
+    "src"
   ],
   "dependencies": {
     "angular": "^1.4.0",
