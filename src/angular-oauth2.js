@@ -8,10 +8,10 @@ import OAuthProvider from './providers/oauth-provider';
 import OAuthTokenProvider from './providers/oauth-token-provider';
 import oauthConfig from './config/oauth-config';
 import oauthInterceptor from './interceptors/oauth-interceptor';
-import ngCookies from 'angular-cookies';
+import LocalForageModule from 'angular-localForage';
 
 var ngModule = angular.module('angular-oauth2', [
-    ngCookies
+    LocalForageModule
   ])
   .config(oauthConfig)
   .factory('oauthInterceptor', oauthInterceptor)

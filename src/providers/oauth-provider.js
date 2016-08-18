@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -56,17 +55,17 @@ function OAuthProvider() {
     });
 
     // Remove `baseUrl` trailing slash.
-    if('/' === config.baseUrl.substr(-1)) {
+    if ('/' === config.baseUrl.substr(-1)) {
       config.baseUrl = config.baseUrl.slice(0, -1);
     }
 
     // Add `grantPath` facing slash.
-    if('/' !== config.grantPath[0]) {
+    if ('/' !== config.grantPath[0]) {
       config.grantPath = `/${config.grantPath}`;
     }
 
     // Add `revokePath` facing slash.
-    if('/' !== config.revokePath[0]) {
+    if ('/' !== config.revokePath[0]) {
       config.revokePath = `/${config.revokePath}`;
     }
 
@@ -98,7 +97,10 @@ function OAuthProvider() {
        */
 
       isAuthenticated() {
-        return !!OAuthToken.getToken();
+        return OAuthToken.getToken()
+          .then(function(token) {
+            return !!token;
+          });
       }
 
       /**
@@ -111,6 +113,7 @@ function OAuthProvider() {
        */
 
       getAccessToken(data, options) {
+        var response;
         data = angular.extend({
           client_id: config.clientId,
           grant_type: 'password'
@@ -129,11 +132,14 @@ function OAuthProvider() {
           }
         }, options);
 
-        return $http.post(`${config.baseUrl}${config.grantPath}`, data, options).then((response) => {
-          OAuthToken.setToken(response.data);
-
-          return response;
-        });
+        return $http.post(`${config.baseUrl}${config.grantPath}`, data, options)
+          .then((res) => {
+            response = res;
+            return OAuthToken.setToken(response.data);
+          })
+          .then(() => {
+            return response;
+          });
       }
 
       /**
@@ -146,30 +152,37 @@ function OAuthProvider() {
        */
 
       getRefreshToken(data, options) {
-        data = angular.extend({
-          client_id: config.clientId,
-          grant_type: 'refresh_token',
-          refresh_token: OAuthToken.getRefreshToken(),
-        }, data);
+        var response;
+        return OAuthToken.getRefreshToken()
+          .then((refresh_token) => {
+            data = angular.extend({
+              client_id: config.clientId,
+              grant_type: 'refresh_token',
+              refresh_token: refresh_token,
+            }, data);
 
-        if (null !== config.clientSecret) {
-          data.client_secret = config.clientSecret;
-        }
+            if (null !== config.clientSecret) {
+              data.client_secret = config.clientSecret;
+            }
 
-        data = queryString.stringify(data);
+            data = queryString.stringify(data);
 
-        options = angular.extend({
-          headers: {
-            'Authorization': undefined,
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }, options);
+            options = angular.extend({
+              headers: {
+                'Authorization': undefined,
+                'Content-Type': 'application/x-www-form-urlencoded'
+              }
+            }, options);
 
-        return $http.post(`${config.baseUrl}${config.grantPath}`, data, options).then((response) => {
-          OAuthToken.setToken(response.data);
-
-          return response;
-        });
+            return $http.post(`${config.baseUrl}${config.grantPath}`, data, options);
+          })
+          .then((res) => {
+            response = res;
+            return OAuthToken.setToken(response.data);
+          })
+          .then(() => {
+            return response;
+          });
       }
 
       /**
@@ -182,31 +195,41 @@ function OAuthProvider() {
        */
 
       revokeToken(data, options) {
-        var refreshToken = OAuthToken.getRefreshToken();
+        var refreshToken, accessToken, response;
+        return OAuthToken.getAccessToken()
+          .then((at) => {
+            accessToken = at;
+            return OAuthToken.getRefreshToken();
+          })
+          .then((rt) => {
+            refreshToken = rt;
+            data = angular.extend({
+              client_id: config.clientId,
+              token: refreshToken ? refreshToken : accessToken,
+              token_type_hint: refreshToken ? 'refresh_token' : 'access_token'
+            }, data);
 
-        data = angular.extend({
-          client_id: config.clientId,
-          token: refreshToken ? refreshToken : OAuthToken.getAccessToken(),
-          token_type_hint: refreshToken ? 'refresh_token' : 'access_token'
-        }, data);
+            if (null !== config.clientSecret) {
+              data.client_secret = config.clientSecret;
+            }
 
-        if (null !== config.clientSecret) {
-          data.client_secret = config.clientSecret;
-        }
+            data = queryString.stringify(data);
 
-        data = queryString.stringify(data);
+            options = angular.extend({
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              }
+            }, options);
 
-        options = angular.extend({
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }, options);
-
-        return $http.post(`${config.baseUrl}${config.revokePath}`, data, options).then((response) => {
-          OAuthToken.removeToken();
-
-          return response;
-        });
+            return $http.post(`${config.baseUrl}${config.revokePath}`, data, options);
+          })
+          .then((res) => {
+            response = res;
+            return OAuthToken.removeToken();
+          })
+          .then(() => {
+            return response;
+          });
       }
     }
 

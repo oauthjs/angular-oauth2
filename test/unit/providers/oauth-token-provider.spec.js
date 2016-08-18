@@ -1,4 +1,3 @@
-
 /**
  * Test `OAuthTokenProvider`.
  */
@@ -23,7 +22,7 @@ describe('OAuthTokenProvider', function() {
         provider.configure(false);
 
         should.fail();
-      } catch(e) {
+      } catch (e) {
         e.should.be.an.instanceOf(TypeError);
         e.message.should.match(/config/);
       }
@@ -32,7 +31,7 @@ describe('OAuthTokenProvider', function() {
 
   describe('$get()', function() {
     beforeEach(function() {
-      angular.module('angular-oauth2.test', ['angular-cookies.mock'])
+      angular.module('angular-oauth2.test', ['angular-localforage.mock'])
         .config(function(OAuthProvider) {
           OAuthProvider.configure({
             baseUrl: 'https://api.website.com',
@@ -43,7 +42,12 @@ describe('OAuthTokenProvider', function() {
       angular.mock.module('angular-oauth2', 'angular-oauth2.test');
 
       angular.mock.inject(function(OAuthToken) {
-        OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
+        OAuthToken.setToken({
+          token_type: 'bearer',
+          access_token: 'foo',
+          expires_in: 3600,
+          refresh_token: 'bar'
+        });
       });
 
     });
@@ -53,45 +57,73 @@ describe('OAuthTokenProvider', function() {
     }));
 
     it('getAuthorizationHeader()', inject(function(OAuthToken) {
-      OAuthToken.getAuthorizationHeader().should.eql('Bearer foo');
+      OAuthToken.getAuthorizationHeader()
+        .then(function(header) {
+          header.should.eql('Bearer foo');
+        })
     }));
 
     it('getAccessToken()', inject(function(OAuthToken) {
-      OAuthToken.getAccessToken().should.eql('foo');
+      OAuthToken.getAccessToken()
+        .then(function(token) {
+          token.should.eql('foo');
+        });
     }));
 
     it('getRefreshToken()', inject(function(OAuthToken) {
-      OAuthToken.getRefreshToken().should.eql('bar');
+      OAuthToken.getRefreshToken()
+        .then(function(token) {
+          token.should.eql('bar');
+        });
     }));
 
     it('setToken()', inject(function(OAuthToken) {
-      OAuthToken.setToken({ token_type: 'bearer', access_token: 'qux', expires_in: 3600, refresh_token: 'biz' });
+      OAuthToken.setToken({
+          token_type: 'bearer',
+          access_token: 'qux',
+          expires_in: 3600,
+          refresh_token: 'biz'
+        })
+        .then(function() {
+          OAuthToken.getToken()
+            .then(function(token) {
+              token.should.eql({
+                token_type: 'bearer',
+                access_token: 'qux',
+                expires_in: 3600,
+                refresh_token: 'biz'
+              });
+            });
+        });
 
-      OAuthToken.getToken().should.eql({
-        token_type: 'bearer',
-        access_token: 'qux',
-        expires_in: 3600,
-        refresh_token: 'biz'
-      });
     }));
 
     it('getToken()', inject(function(OAuthToken) {
-      OAuthToken.getToken().should.eql({
-        token_type: 'bearer',
-        access_token: 'foo',
-        expires_in: 3600,
-        refresh_token: 'bar'
-      });
+      OAuthToken.getToken()
+        .then(function(token) {
+          token.should.eql({
+            token_type: 'bearer',
+            access_token: 'foo',
+            expires_in: 3600,
+            refresh_token: 'bar'
+          });
+        });
     }));
 
     it('getTokenType()', inject(function(OAuthToken) {
-      OAuthToken.getTokenType().should.eql('bearer');
+      OAuthToken.getTokenType()
+        .then(function(token) {
+          token.should.eql('bearer');
+        });
     }));
 
     it('removeToken()', inject(function(OAuthToken) {
       OAuthToken.removeToken();
-
-      (undefined === OAuthToken.getToken()).should.true;
+      OAuthToken.getToken()
+        .then(function(token) {
+          (undefined === token)
+          .should.true;
+        });
     }));
   });
 });
