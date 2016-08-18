@@ -53,7 +53,7 @@
     "yargs": "^3.6.0"
   },
   "scripts": {
-    "build": "npm install && grunt build",
+    "build": "npm install && gulp build",
     "changelog": "./node_modules/.bin/github-changes -o seegno -r angular-oauth2 -a --only-pulls --use-commit-body --title 'Changelog' --date-format '/ YYYY-MM-DD'",
     "test": "./node_modules/.bin/gulp test --browsers Chrome"
   }
