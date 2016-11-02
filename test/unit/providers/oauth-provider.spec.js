@@ -13,7 +13,7 @@ describe('OAuthProvider', function() {
   };
 
   describe('configure()', function() {
-    var provider, testSuite;
+    var provider;
 
     beforeEach(function() {
       angular.module('angular-oauth2.test', [])
