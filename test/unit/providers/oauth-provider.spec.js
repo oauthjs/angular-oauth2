@@ -37,17 +37,6 @@ describe('OAuthProvider', function() {
       }
     });
 
-    it('should throw an error if already configured', function() {
-      try {
-        provider.configure(defaults);
-        provider.configure(defaults);
-
-        should.fail();
-      } catch(e) {
-        e.should.be.an.instanceOf(Error);
-      }
-    });
-
     it('should throw an error if `baseUrl` param is empty', function() {
       try {
         provider.configure(_.omit(defaults, 'baseUrl'));
@@ -71,9 +60,10 @@ describe('OAuthProvider', function() {
     });
 
     it('should not throw an error if `clientSecret` param is empty', function() {
-      var config = provider.configure(_.omit(defaults, 'clientSecret'));
-
-      (null === config.clientSecret).should.true;
+      try {
+        provider.configure(_.omit(defaults, 'clientSecret'));
+        should.not.fail();
+      } catch(e) {}
     });
 
     it('should throw an error if `grantPath` param is empty', function() {
@@ -88,19 +78,19 @@ describe('OAuthProvider', function() {
     });
 
     it('should remove trailing slash from `baseUrl`', function() {
-      var config = provider.configure(_.defaults({
+      provider.configure(_.defaults({
         baseUrl: 'https://api.website.com/'
       }, defaults));
 
-      config.baseUrl.should.equal('https://api.website.com');
+      provider.defaultConfig.baseUrl.should.equal('https://api.website.com');
     });
 
     it('should add facing slash from `grantPath`', function() {
-      var config = provider.configure(_.defaults({
+      provider.configure(_.defaults({
         grantPath: 'oauth2/token'
       }, defaults));
 
-      config.grantPath.should.equal('/oauth2/token');
+      provider.defaultConfig.grantPath.should.equal('/oauth2/token');
     });
 
     it('should throw an error if `revokePath` param is empty', function() {
@@ -115,11 +105,11 @@ describe('OAuthProvider', function() {
     });
 
     it('should add facing slash from `revokePath`', function() {
-      var config = provider.configure(_.defaults({
+      provider.configure(_.defaults({
         revokePath: 'oauth2/revoke'
       }, defaults));
 
-      config.revokePath.should.equal('/oauth2/revoke');
+      provider.defaultConfig.revokePath.should.equal('/oauth2/revoke');
     });
   });
 
@@ -136,6 +126,100 @@ describe('OAuthProvider', function() {
     afterEach(inject(function(OAuthToken) {
       OAuthToken.removeToken();
     }));
+    describe('construtor', function() {
+      it('should set initialize config with data passed in configure', inject(function(OAuth) {
+        OAuth.config.should.eql(defaults);
+      }))
+    })
+
+    describe('configure()', function() {
+      it('should throw an error if configuration is not an object', inject(function(OAuth) {
+        try {
+          OAuth.configure(false);
+
+          should.fail();
+        } catch(e) {
+          e.should.be.an.instanceOf(TypeError);
+          e.message.should.match(/config/);
+        }
+      }));
+      
+      it('should throw an error if `baseUrl` param is empty', inject(function(OAuth) {
+        try {
+          OAuth.configure(_.omit(defaults, 'baseUrl'));
+
+          should.fail();
+        } catch(e) {
+          e.should.be.an.instanceOf(Error);
+          e.message.should.match(/baseUrl/);
+        }
+      }));
+
+      it('should throw an error if `clientId` param is empty', inject(function(OAuth) {
+        try {
+          OAuth.configure(_.omit(defaults, 'clientId'));
+
+          should.fail();
+        } catch(e) {
+          e.should.be.an.instanceOf(Error);
+          e.message.should.match(/clientId/);
+        }
+      }));
+
+      it('should not throw an error if `clientSecret` param is empty', inject(function(OAuth) {
+        try{
+          OAuth.configure(_.omit(defaults, 'clientSecret'));
+          
+          should.not.fail();
+        } catch(e) {}
+      }));
+
+      it('should throw an error if `grantPath` param is empty', inject(function(OAuth) {
+        try {
+          OAuth.configure(_.defaults({ grantPath: null }, defaults));
+
+          should.fail();
+        } catch(e) {
+          e.should.be.an.instanceOf(Error);
+          e.message.should.match(/grantPath/);
+        }
+      }));
+
+      it('should remove trailing slash from `baseUrl`', inject(function(OAuth) {
+        OAuth.configure(_.defaults({
+          baseUrl: 'https://api.website.com/'
+        }, defaults));
+
+        OAuth.config.baseUrl.should.equal('https://api.website.com');
+      }));
+
+      it('should add facing slash from `grantPath`', inject(function(OAuth) {
+        OAuth.configure(_.defaults({
+          grantPath: 'oauth2/token'
+        }, defaults));
+
+        OAuth.config.grantPath.should.equal('/oauth2/token');
+      }));
+
+      it('should throw an error if `revokePath` param is empty', inject(function(OAuth) {
+        try {
+          OAuth.configure(_.defaults({ revokePath: null }, defaults));
+
+          should.fail();
+        } catch(e) {
+          e.should.be.an.instanceOf(Error);
+          e.message.should.match(/revokePath/);
+        }
+      }));
+
+      it('should add facing slash from `revokePath`', inject(function(OAuth) {
+        OAuth.configure(_.defaults({
+          revokePath: 'oauth2/revoke'
+        }, defaults));
+
+        OAuth.config.revokePath.should.equal('/oauth2/revoke');
+      }));
+    });
 
     describe('isAuthenticated()', function() {
       it('should be true when there is a stored `token` cookie', inject(function(OAuth, OAuthToken) {
@@ -293,8 +377,6 @@ describe('OAuthProvider', function() {
             expires_in: 3600,
             refresh_token: 'biz'
           });
-        }).catch(function() {
-          should.fail();
         });
 
         $httpBackend.flush();
