@@ -56,7 +56,7 @@ angular.module('myApp', ['angular-oauth2'])
   }]);
 ```
 
-You can also configure `OAuth` service in a `.run()`block, in case you retrieve the Oauth server configuration from a ajax request.
+You can also configure `OAuth` service in a `.run()` block, in case you retrieve the Oauth server configuration from a ajax request.
 
 ```js
 angular.module('myApp', ['angular-oauth2'])
@@ -109,7 +109,7 @@ OAuthProvider.configure({
 
 #### OAuth
 
-Update configuration defaults
+Update configuration defaults:
 
 ```js
 OAuth.configure({
