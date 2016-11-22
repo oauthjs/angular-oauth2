@@ -32,7 +32,7 @@ describe('OAuthTokenProvider', function() {
 
   describe('$get()', function() {
     beforeEach(function() {
-      angular.module('angular-oauth2.test', ['angular-cookies.mock'])
+      angular.module('angular-oauth2.test', [])
         .config(function(OAuthProvider) {
           OAuthProvider.configure({
             baseUrl: 'https://api.website.com',

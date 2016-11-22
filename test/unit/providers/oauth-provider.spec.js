@@ -115,7 +115,7 @@ describe('OAuthProvider', function() {
 
   describe('$get()', function() {
     beforeEach(function() {
-      angular.module('angular-oauth2.test', ['angular-cookies.mock'])
+      angular.module('angular-oauth2.test', [])
         .config(function(OAuthProvider) {
           OAuthProvider.configure(defaults);
         });
@@ -222,13 +222,13 @@ describe('OAuthProvider', function() {
     });
 
     describe('isAuthenticated()', function() {
-      it('should be true when there is a stored `token` cookie', inject(function(OAuth, OAuthToken) {
+      it('should be true when there is a stored token', inject(function(OAuth, OAuthToken) {
         OAuthToken.setToken({ token_type: 'bearer', access_token: 'foo', expires_in: 3600, refresh_token: 'bar' });
 
         OAuth.isAuthenticated().should.be.true;
       }));
 
-      it('should be false when there is no stored `token` cookie', inject(function(OAuth) {
+      it('should be false when there is no stored token', inject(function(OAuth) {
         OAuth.isAuthenticated().should.be.false;
       }));
     });
