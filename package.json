@@ -1,6 +1,6 @@
 {
   "name": "angular-oauth2",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "Angular OAuth2",
   "main": "./dist/angular-oauth2.js",
   "repository": {
@@ -10,7 +10,8 @@
   "keywords": [
     "AngularJS",
     "Authentication",
-    "OAuth2"
+    "OAuth2",
+    "localstorage"
   ],
   "author": {
     "name": "Seegno",
@@ -24,6 +25,7 @@
   "dependencies": {
     "angular": "^1.4.0",
     "angular-cookies": "^1.4.0",
+    "ngstorage": "^0.3.11",
     "query-string": "^1.0.0"
   },
   "devDependencies": {
