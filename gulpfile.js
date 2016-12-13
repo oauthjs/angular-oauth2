@@ -29,13 +29,13 @@ var config = {
     template: `
       (function(root, factory) {
         if (typeof define === 'function' && define.amd) {
-          define([ "angular", "angular-cookies", "query-string" ], factory);
+          define([ "angular", "angular-cookies", "query-string", "ngstorage"], factory);
         } else if (typeof exports === 'object') {
-          module.exports = factory(require("angular"), require("angular-cookies"), require("query-string"));
+          module.exports = factory(require("angular"), require("angular-cookies"), require("query-string"), require("ngstorage"));
         } else {
-          root.<%= namespace %> = factory(root.angular, 'ngCookies', root.queryString);
+          root.<%= namespace %> = factory(root.angular, 'ngCookies', root.queryString,'ngStorage');
         }
-      }(this, function(angular, ngCookies, queryString) {
+      }(this, function(angular, ngCookies, queryString, ngStorage) {
         <% if (exports) { %>
           <%= contents %>
           return <%= exports %>;

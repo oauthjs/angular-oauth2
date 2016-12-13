@@ -1,19 +1,23 @@
 /**
  * angular-oauth2 - Angular OAuth2
- * @version v4.1.0
+ * @version v4.1.1
  * @link https://github.com/seegno/angular-oauth2
  * @license MIT
  */
 (function(root, factory) {
     if (typeof define === "function" && define.amd) {
-        define([ "angular", "angular-cookies", "query-string" ], factory);
+        define([ "angular", "angular-cookies", "query-string", "ngstorage" ], factory);
     } else if (typeof exports === "object") {
-        module.exports = factory(require("angular"), require("angular-cookies"), require("query-string"));
+        module.exports = factory(require("angular"), require("angular-cookies"), require("query-string"), require("ngstorage"));
     } else {
-        root.angularOAuth2 = factory(root.angular, "ngCookies", root.queryString);
+        root.angularOAuth2 = factory(root.angular, "ngCookies", root.queryString, "ngStorage");
     }
-})(this, function(angular, ngCookies, queryString) {
-    var ngModule = angular.module("angular-oauth2", [ ngCookies ]).config(oauthConfig).factory("oauthInterceptor", oauthInterceptor).provider("OAuth", OAuthProvider).provider("OAuthToken", OAuthTokenProvider);
+})(this, function(angular, ngCookies, queryString, ngStorage) {
+    var ngModule = angular.module("angular-oauth2", [ ngCookies, ngStorage ]).config(oauthConfig).factory("oauthInterceptor", oauthInterceptor).provider("OAuth", OAuthProvider).provider("OAuthToken", OAuthTokenProvider);
+    function oauthConfig($httpProvider) {
+        $httpProvider.interceptors.push("oauthInterceptor");
+    }
+    oauthConfig.$inject = [ "$httpProvider" ];
     function oauthInterceptor($q, $rootScope, OAuthToken) {
         return {
             request: function request(config) {
@@ -36,10 +40,6 @@
         };
     }
     oauthInterceptor.$inject = [ "$q", "$rootScope", "OAuthToken" ];
-    function oauthConfig($httpProvider) {
-        $httpProvider.interceptors.push("oauthInterceptor");
-    }
-    oauthConfig.$inject = [ "$httpProvider" ];
     var _createClass = function() {
         function defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
@@ -221,7 +221,7 @@
             angular.extend(config, params);
             return config;
         };
-        this.$get = function($cookies) {
+        this.$get = function($cookies, $localStorage) {
             var OAuthToken = function() {
                 function OAuthToken() {
                     _classCallCheck(this, OAuthToken);
@@ -229,12 +229,14 @@
                 _createClass(OAuthToken, [ {
                     key: "setToken",
                     value: function setToken(data) {
-                        return $cookies.putObject(config.name, data, config.options);
+                        $cookies.putObject(config.name, data, config.options);
+                        $localStorage[config.name] = data;
+                        return $localStorage[config.name];
                     }
                 }, {
                     key: "getToken",
                     value: function getToken() {
-                        return $cookies.getObject(config.name);
+                        return $localStorage[config.name] || $cookies.getObject(config.name);
                     }
                 }, {
                     key: "getAccessToken",
@@ -262,6 +264,7 @@
                 }, {
                     key: "removeToken",
                     value: function removeToken() {
+                        delete $localStorage[config.name];
                         return $cookies.remove(config.name, config.options);
                     }
                 } ]);
@@ -269,7 +272,7 @@
             }();
             return new OAuthToken();
         };
-        this.$get.$inject = [ "$cookies" ];
+        this.$get.$inject = [ "$cookies", "$localStorage" ];
     }
     return ngModule;
 });

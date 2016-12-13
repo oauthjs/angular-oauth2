@@ -39,7 +39,7 @@ function OAuthTokenProvider() {
    * OAuthToken service.
    */
 
-  this.$get = function($cookies) {
+  this.$get = function($cookies,$localStorage) {
     class OAuthToken {
 
       /**
@@ -47,7 +47,9 @@ function OAuthTokenProvider() {
        */
 
       setToken(data) {
-        return $cookies.putObject(config.name, data, config.options);
+               $cookies.putObject(config.name, data, config.options);
+               $localStorage[config.name]=data;
+        return $localStorage[config.name];
       }
 
       /**
@@ -55,7 +57,8 @@ function OAuthTokenProvider() {
        */
 
       getToken() {
-        return $cookies.getObject(config.name);
+
+           return $localStorage[config.name] || $cookies.getObject(config.name);
       }
 
       /**
@@ -99,6 +102,8 @@ function OAuthTokenProvider() {
        */
 
       removeToken() {
+        
+              delete $localStorage[config.name];
         return $cookies.remove(config.name, config.options);
       }
     }
@@ -106,7 +111,7 @@ function OAuthTokenProvider() {
     return new OAuthToken();
   };
 
-  this.$get.$inject = ['$cookies'];
+  this.$get.$inject = ['$cookies','$localStorage'];
 }
 
 /**

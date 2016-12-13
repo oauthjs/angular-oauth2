@@ -16,6 +16,7 @@ module.exports = function(config) {
     files: [
       'node_modules/angular/angular.js',
       'node_modules/angular-cookies/angular-cookies.js',
+      'node_modules/ngstorage/ngStorage.js',
       'node_modules/query-string/query-string.js',
       'node_modules/lodash/lodash.js',
       'node_modules/angular-mocks/angular-mocks.js',
