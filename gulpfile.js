@@ -29,9 +29,9 @@ var config = {
     template: `
       (function(root, factory) {
         if (typeof define === 'function' && define.amd) {
-          define([ "angular", "angular-cookies", "query-string", "ngStorage"], factory);
+          define([ "angular", "angular-cookies", "query-string", "ngstorage"], factory);
         } else if (typeof exports === 'object') {
-          module.exports = factory(require("angular"), require("angular-cookies"), require("query-string"), require("ngStorage"));
+          module.exports = factory(require("angular"), require("angular-cookies"), require("query-string"), require("ngstorage"));
         } else {
           root.<%= namespace %> = factory(root.angular, 'ngCookies', root.queryString,'ngStorage');
         }

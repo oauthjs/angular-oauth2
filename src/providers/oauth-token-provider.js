@@ -58,7 +58,7 @@ function OAuthTokenProvider() {
 
       getToken() {
 
-        return $localStorage[config.name] || $cookies.getObject(config.name);
+           return $localStorage[config.name] || $cookies.getObject(config.name);
       }
 
       /**
@@ -102,6 +102,8 @@ function OAuthTokenProvider() {
        */
 
       removeToken() {
+        
+              delete $localStorage[config.name];
         return $cookies.remove(config.name, config.options);
       }
     }
