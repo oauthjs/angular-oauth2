@@ -20,4 +20,6 @@ angular.module('angular-cookies.mock', [])
         }
       }
     }
-  });
+  }).config(['$qProvider',function($qProvider){
+      $qProvider.errorOnUnhandledRejections(false); // done to fix rejection raised errors during tests, since angular 1.5.9 
+  }]);
