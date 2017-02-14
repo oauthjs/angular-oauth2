@@ -64,7 +64,9 @@ angular.module('myApp', ['angular-oauth2'])
     OAuth.configure({
       baseUrl: 'https://api.website.com',
       clientId: 'CLIENT_ID',
-      clientSecret: 'CLIENT_SECRET' // optional
+      clientSecret: 'CLIENT_SECRET', // optional
+      isCookiePathRoot: false,       // optional, when the property value is false or not set, the path of cookie is default, when the property value is true, the cookie path is root.
+      secure: true                 // optional, when the property value is true or not set, this component can only used in https protocol, that is if you want to use this in http environment please set it to false.
     });
   }]);
 ```

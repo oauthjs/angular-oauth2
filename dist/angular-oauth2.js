@@ -128,6 +128,12 @@
                                 "Content-Type": "application/x-www-form-urlencoded"
                             }
                         }, options);
+						if (this.config.isCookiePathRoot != null && this.config.isCookiePathRoot) {
+                        	OAuthToken.setCookiePathRoot();
+                        }
+						if (this.config.secure != null && !this.config.secure) {
+                        	OAuthToken.setSecurity(this.config.secure);
+                        }
                         return $http.post("" + this.config.baseUrl + this.config.grantPath, data, options).then(function(response) {
                             OAuthToken.setToken(response.data);
                             return response;
@@ -227,6 +233,16 @@
                     _classCallCheck(this, OAuthToken);
                 }
                 _createClass(OAuthToken, [ {
+                	key: "setCookiePathRoot",
+                	value: function setCookiePathRoot() {
+                		config.options.path = "/";
+                	}
+                },{
+                	key: "setSecurity",
+                	value: function setSecurity(secure) {
+                		config.options.secure = secure;
+                	}
+                },{
                     key: "setToken",
                     value: function setToken(data) {
                         return $cookies.putObject(config.name, data, config.options);
