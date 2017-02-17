@@ -139,6 +139,13 @@ function OAuthProvider() {
           }
         }, options);
 
+		if (this.config.isCookiePathRoot !== null && this.config.isCookiePathRoot) {
+			OAuthToken.setCookiePathRoot();
+		}
+		if (this.config.secure !== null && !this.config.secure) {
+			OAuthToken.setSecurity(this.config.secure);
+		}
+
         return $http.post(`${this.config.baseUrl}${this.config.grantPath}`, data, options).then((response) => {
           OAuthToken.setToken(response.data);
 
