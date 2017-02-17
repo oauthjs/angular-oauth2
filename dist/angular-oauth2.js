@@ -128,10 +128,10 @@
                                 "Content-Type": "application/x-www-form-urlencoded"
                             }
                         }, options);
-                        if (this.config.isCookiePathRoot !== null && this.config.isCookiePathRoot) {
+                        if (typeof this.config.isCookiePathRoot !== "undefined" && this.config.isCookiePathRoot === true) {
                             OAuthToken.setCookiePathRoot();
                         }
-                        if (this.config.secure !== null && !this.config.secure) {
+                        if (typeof this.config.secure !== "undefined" && !this.config.secure) {
                             OAuthToken.setSecurity(this.config.secure);
                         }
                         return $http.post("" + this.config.baseUrl + this.config.grantPath, data, options).then(function(response) {
