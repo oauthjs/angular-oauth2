@@ -14,6 +14,10 @@
     }
 })(this, function(angular, ngCookies, queryString) {
     var ngModule = angular.module("angular-oauth2", [ ngCookies ]).config(oauthConfig).factory("oauthInterceptor", oauthInterceptor).provider("OAuth", OAuthProvider).provider("OAuthToken", OAuthTokenProvider);
+    function oauthConfig($httpProvider) {
+        $httpProvider.interceptors.push("oauthInterceptor");
+    }
+    oauthConfig.$inject = [ "$httpProvider" ];
     function oauthInterceptor($q, $rootScope, OAuthToken) {
         return {
             request: function request(config) {
@@ -31,15 +35,14 @@
                 if (401 === rejection.status && rejection.data && "invalid_token" === rejection.data.error || rejection.headers("www-authenticate") && 0 === rejection.headers("www-authenticate").indexOf("Bearer")) {
                     $rootScope.$emit("oauth:error", rejection);
                 }
+                if (403 === rejection.status && rejection.data && "access_denied" === rejection.data.error || rejection.headers("www-authenticate") && 0 === rejection.headers("www-authenticate").indexOf("Bearer")) {
+                    $rootScope.$emit("oauth:error", rejection);
+                }
                 return $q.reject(rejection);
             }
         };
     }
     oauthInterceptor.$inject = [ "$q", "$rootScope", "OAuthToken" ];
-    function oauthConfig($httpProvider) {
-        $httpProvider.interceptors.push("oauthInterceptor");
-    }
-    oauthConfig.$inject = [ "$httpProvider" ];
     var _createClass = function() {
         function defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
@@ -128,6 +131,12 @@
                                 "Content-Type": "application/x-www-form-urlencoded"
                             }
                         }, options);
+                        if (typeof this.config.isCookiePathRoot !== "undefined" && this.config.isCookiePathRoot === true) {
+                            OAuthToken.setCookiePathRoot();
+                        }
+                        if (typeof this.config.secure !== "undefined" && !this.config.secure) {
+                            OAuthToken.setSecurity(this.config.secure);
+                        }
                         return $http.post("" + this.config.baseUrl + this.config.grantPath, data, options).then(function(response) {
                             OAuthToken.setToken(response.data);
                             return response;
@@ -227,6 +236,16 @@
                     _classCallCheck(this, OAuthToken);
                 }
                 _createClass(OAuthToken, [ {
+                    key: "setCookiePathRoot",
+                    value: function setCookiePathRoot() {
+                        config.options.path = "/";
+                    }
+                }, {
+                    key: "setSecurity",
+                    value: function setSecurity(secure) {
+                        config.options.secure = secure;
+                    }
+                }, {
                     key: "setToken",
                     value: function setToken(data) {
                         return $cookies.putObject(config.name, data, config.options);

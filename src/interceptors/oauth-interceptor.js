@@ -33,6 +33,9 @@ function oauthInterceptor($q, $rootScope, OAuthToken) {
       ) {
         $rootScope.$emit('oauth:error', rejection);
       }
+	  if (403 === rejection.status && rejection.data && 'access_denied' === rejection.data.error || rejection.headers('www-authenticate') && 0 === rejection.headers('www-authenticate').indexOf('Bearer')) {
+		$rootScope.$emit('oauth:error', rejection);
+	  }
 
       return $q.reject(rejection);
     }
