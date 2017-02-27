@@ -42,7 +42,7 @@ function OAuthTokenProvider() {
   this.$get = function($cookies) {
     class OAuthToken {
 
-	  /**
+      /**
        * Set Cookie Path Root.
        */
 
@@ -50,7 +50,7 @@ function OAuthTokenProvider() {
         config.options.path = '/';
       }
 
-	  /**
+      /**
        * Set Secure.
        */
 
