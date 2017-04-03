@@ -63,7 +63,9 @@ function OAuthTokenProvider() {
        */
 
       getAccessToken() {
-        return this.getToken() ? this.getToken().access_token : undefined;
+        const { access_token } = this.getToken() || {};
+
+        return access_token;
       }
 
       /**
