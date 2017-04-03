@@ -1,7 +1,12 @@
 ## Changelog
 
+### 4.1.1 / 2017-04-03
+- [#118](https://github.com/oauthjs/angular-oauth2/pull/118) Validate object property access (@hitmanmcc)
+- [#107](https://github.com/oauthjs/angular-oauth2/pull/107) Updated readme (@anteriovieira)
+
 ### 4.1.0 / 2016-11-03
 - [#87](https://github.com/oauthjs/angular-oauth2/pull/87) allow overriding oauth base config using options (@lionelB)
+- [#96](https://github.com/oauthjs/angular-oauth2/pull/96) Specify the type of grant used (#96) (@Timokasse)
 
 ### 4.0.0 / 2016-02-12
 - [#80](https://github.com/oauthjs/angular-oauth2/pull/80) Reintroduce authorization header to be overridden (@ruipenso)
@@ -37,7 +42,7 @@
 ### 2.0.0 / 2015-02-04
 - [#11](https://github.com/oauthjs/angular-oauth2/pull/11) Add options to `ipCookie.remove()` on OAuthToken (@ruipenso)
 - [#10](https://github.com/oauthjs/angular-oauth2/pull/10) Update `oauthInterceptor` responseError handling (@ruipenso)
-- [#7](https://github.com/oauthjs/angular-oauth2/pull/7) Fix readme typo of download url (@brunnolou)
+- [#7](https://github.com/oauthjs/angular-oauth2/pull/7) Fix readme typo of download url (@seegno)
 - [#6](https://github.com/oauthjs/angular-oauth2/pull/6) README.md: typo fix (@AdirAmsalem)
 
 ### 1.0.2 / 2015-01-19

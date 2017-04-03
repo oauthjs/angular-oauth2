@@ -1,6 +1,6 @@
 /**
  * angular-oauth2 - Angular OAuth2
- * @version v4.1.0
+ * @version v4.1.1
  * @link https://github.com/seegno/angular-oauth2
  * @license MIT
  */
@@ -14,6 +14,10 @@
     }
 })(this, function(angular, ngCookies, queryString) {
     var ngModule = angular.module("angular-oauth2", [ ngCookies ]).config(oauthConfig).factory("oauthInterceptor", oauthInterceptor).provider("OAuth", OAuthProvider).provider("OAuthToken", OAuthTokenProvider);
+    function oauthConfig($httpProvider) {
+        $httpProvider.interceptors.push("oauthInterceptor");
+    }
+    oauthConfig.$inject = [ "$httpProvider" ];
     function oauthInterceptor($q, $rootScope, OAuthToken) {
         return {
             request: function request(config) {
@@ -24,11 +28,14 @@
                 return config;
             },
             responseError: function responseError(rejection) {
+                if (!rejection) {
+                    return $q.reject(rejection);
+                }
                 if (400 === rejection.status && rejection.data && ("invalid_request" === rejection.data.error || "invalid_grant" === rejection.data.error)) {
                     OAuthToken.removeToken();
                     $rootScope.$emit("oauth:error", rejection);
                 }
-                if (401 === rejection.status && rejection.data && "invalid_token" === rejection.data.error || rejection.headers("www-authenticate") && 0 === rejection.headers("www-authenticate").indexOf("Bearer")) {
+                if (401 === rejection.status && rejection.data && "invalid_token" === rejection.data.error || rejection.headers && rejection.headers("www-authenticate") && 0 === rejection.headers("www-authenticate").indexOf("Bearer")) {
                     $rootScope.$emit("oauth:error", rejection);
                 }
                 return $q.reject(rejection);
@@ -36,10 +43,6 @@
         };
     }
     oauthInterceptor.$inject = [ "$q", "$rootScope", "OAuthToken" ];
-    function oauthConfig($httpProvider) {
-        $httpProvider.interceptors.push("oauthInterceptor");
-    }
-    oauthConfig.$inject = [ "$httpProvider" ];
     var _createClass = function() {
         function defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
@@ -239,25 +242,33 @@
                 }, {
                     key: "getAccessToken",
                     value: function getAccessToken() {
-                        return this.getToken() ? this.getToken().access_token : undefined;
+                        var _ref = this.getToken() || {};
+                        var access_token = _ref.access_token;
+                        return access_token;
                     }
                 }, {
                     key: "getAuthorizationHeader",
                     value: function getAuthorizationHeader() {
-                        if (!(this.getTokenType() && this.getAccessToken())) {
+                        var tokenType = this.getTokenType();
+                        var accessToken = this.getAccessToken();
+                        if (!tokenType || !accessToken) {
                             return;
                         }
-                        return this.getTokenType().charAt(0).toUpperCase() + this.getTokenType().substr(1) + " " + this.getAccessToken();
+                        return tokenType.charAt(0).toUpperCase() + tokenType.substr(1) + " " + accessToken;
                     }
                 }, {
                     key: "getRefreshToken",
                     value: function getRefreshToken() {
-                        return this.getToken() ? this.getToken().refresh_token : undefined;
+                        var _ref2 = this.getToken() || {};
+                        var refresh_token = _ref2.refresh_token;
+                        return refresh_token;
                     }
                 }, {
                     key: "getTokenType",
                     value: function getTokenType() {
-                        return this.getToken() ? this.getToken().token_type : undefined;
+                        var _ref3 = this.getToken() || {};
+                        var token_type = _ref3.token_type;
+                        return token_type;
                     }
                 }, {
                     key: "removeToken",

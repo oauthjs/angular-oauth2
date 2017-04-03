@@ -1,6 +1,6 @@
 {
   "name": "angular-oauth2",
-  "version": "4.0.0",
+  "version": "4.1.1",
   "description": "AngularJS OAuth2",
   "main": "./dist/angular-oauth2.js",
   "authors": [
@@ -23,8 +23,8 @@
     "test"
   ],
   "dependencies": {
-    "angular": "^1.4.0",
-    "angular-cookies": "^1.4.0",
+    "angular": "1.5.9",
+    "angular-cookies": "1.5.9",
     "query-string": "^1.0.0"
   }
 }
