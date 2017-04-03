@@ -85,7 +85,9 @@ function OAuthTokenProvider() {
        */
 
       getRefreshToken() {
-        return this.getToken() ? this.getToken().refresh_token : undefined;
+        const { refresh_token } = this.getToken() || {};
+
+        return refresh_token;
       }
 
       /**
