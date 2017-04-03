@@ -73,11 +73,14 @@ function OAuthTokenProvider() {
        */
 
       getAuthorizationHeader() {
-        if (!(this.getTokenType() && this.getAccessToken())) {
+        const tokenType = this.getTokenType();
+        const accessToken = this.getAccessToken();
+
+        if (!tokenType || !accessToken) {
           return;
         }
 
-        return `${this.getTokenType().charAt(0).toUpperCase() + this.getTokenType().substr(1)} ${this.getAccessToken()}`;
+        return `${tokenType.charAt(0).toUpperCase() + tokenType.substr(1)} ${accessToken}`;
       }
 
       /**
