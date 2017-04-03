@@ -95,7 +95,9 @@ function OAuthTokenProvider() {
        */
 
       getTokenType() {
-        return this.getToken() ? this.getToken().token_type : undefined;
+        const { token_type } = this.getToken() || {};
+
+        return token_type;
       }
 
       /**
