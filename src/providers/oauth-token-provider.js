@@ -47,7 +47,7 @@ function OAuthTokenProvider() {
        */
 
       setToken(data) {
-        return $cookies.putObject(config.name, data, config.options);
+        return config.storage ? config.storage.setItem(config.name, data) : $cookies.putObject(config.name, data, config.options);
       }
 
       /**
@@ -55,7 +55,7 @@ function OAuthTokenProvider() {
        */
 
       getToken() {
-        return $cookies.getObject(config.name);
+        return config.storage ? config.storage.getItem(config.name) : $cookies.getObject(config.name);
       }
 
       /**
@@ -108,7 +108,7 @@ function OAuthTokenProvider() {
        */
 
       removeToken() {
-        return $cookies.remove(config.name, config.options);
+        return config.storage ? config.storage.removeItem(config.name) : $cookies.remove(config.name, config.options);
       }
     }
 
