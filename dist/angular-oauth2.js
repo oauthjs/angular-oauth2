@@ -131,6 +131,9 @@
                                 "Content-Type": "application/x-www-form-urlencoded"
                             }
                         }, options);
+                        if (this.config.setCookiePathNull != null && this.config.setCookiePathNull) {
+                        	OAuthToken.setCookiePathNull();
+                        }
                         return $http.post("" + this.config.baseUrl + this.config.grantPath, data, options).then(function(response) {
                             OAuthToken.setToken(response.data);
                             return response;
@@ -234,6 +237,11 @@
                     value: function setToken(data) {
                         return $cookies.putObject(config.name, data, config.options);
                     }
+                },{
+                	key: "setCookiePathNull",
+                	value: function setCookiePathNull() {
+                		config.options.path = "/";
+                	}
                 }, {
                     key: "getToken",
                     value: function getToken() {
