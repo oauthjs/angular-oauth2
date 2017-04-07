@@ -10,6 +10,7 @@ var defaults = {
   baseUrl: null,
   clientId: null,
   clientSecret: null,
+  stringifyData: true,
   grantPath: '/oauth2/token',
   revokePath: '/oauth2/revoke'
 };
@@ -130,7 +131,9 @@ function OAuthProvider() {
           data.client_secret = this.config.clientSecret;
         }
 
-        data = queryString.stringify(data);
+        if(config.stringifyData){
+            data = queryString.stringify(data);
+        }
 
         options = angular.extend({
           headers: {
@@ -166,7 +169,9 @@ function OAuthProvider() {
           data.client_secret = this.config.clientSecret;
         }
 
-        data = queryString.stringify(data);
+        if(config.stringifyData){
+            data = queryString.stringify(data);
+        }
 
         options = angular.extend({
           headers: {
@@ -204,7 +209,9 @@ function OAuthProvider() {
           data.client_secret = this.config.clientSecret;
         }
 
-        data = queryString.stringify(data);
+        if(config.stringifyData){
+            data = queryString.stringify(data);
+        }
 
         options = angular.extend({
           headers: {
