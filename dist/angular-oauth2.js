@@ -127,7 +127,7 @@
                         data = queryString.stringify(data);
                         options = angular.extend({
                             headers: {
-                                Authorization: undefined,
+                                Authorization: window.btoa(config.clientId + ":" + config.clientSecret),
                                 "Content-Type": "application/x-www-form-urlencoded"
                             }
                         }, options);
