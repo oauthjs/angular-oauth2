@@ -95,6 +95,32 @@
             }
             return config;
         };
+        var addCredentialsInHeader = function addCredentialsInHeader(config, options) {
+            credentials = config.clientId + ":";
+            if (null !== config.clientSecret) {
+                credentials += config.clientSecret;
+            }
+            credentials = "Basic " + btoa(credentials);
+
+            options = angular.extend({
+                headers: {
+                    Authorization: credentials,
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            }, options);
+
+            return options;
+        };
+        var addCredentialsInBody = function addCredentialsInBody(config, data) {
+            data = angular.extend({
+                client_id: config.clientId
+            }, data);
+            if (null !== config.clientSecret) {
+                data.client_secret = config.clientSecret;
+            }
+
+            return data;
+        };
         this.configure = function(params) {
             _this.defaultConfig = sanitizeConfigParams(params);
         };
@@ -117,20 +143,22 @@
                 }, {
                     key: "getAccessToken",
                     value: function getAccessToken(data, options) {
+                        if ("header" === this.config.clientCredentials) {
+                            options = addCredentialsInHeader(this.config, options);
+                        } else {
+                            data = addCredentialsInBody(this.config, data);
+                            options = angular.extend({
+                                headers: {
+                                    Authorization: undefined,
+                                    "Content-Type": "application/x-www-form-urlencoded"
+                                }
+                            }, options);
+                        }
+
                         data = angular.extend({
-                            client_id: this.config.clientId,
                             grant_type: "password"
                         }, data);
-                        if (null !== this.config.clientSecret) {
-                            data.client_secret = this.config.clientSecret;
-                        }
                         data = queryString.stringify(data);
-                        options = angular.extend({
-                            headers: {
-                                Authorization: undefined,
-                                "Content-Type": "application/x-www-form-urlencoded"
-                            }
-                        }, options);
                         return $http.post("" + this.config.baseUrl + this.config.grantPath, data, options).then(function(response) {
                             OAuthToken.setToken(response.data);
                             return response;
@@ -139,21 +167,23 @@
                 }, {
                     key: "getRefreshToken",
                     value: function getRefreshToken(data, options) {
+                        if ("header" === this.config.clientCredentials) {
+                            options = addCredentialsInHeader(this.config, options);
+                        } else {
+                            data = addCredentialsInBody(this.config, data);
+                            options = angular.extend({
+                                headers: {
+                                    Authorization: undefined,
+                                    "Content-Type": "application/x-www-form-urlencoded"
+                                }
+                            }, options);
+                        }
+
                         data = angular.extend({
-                            client_id: this.config.clientId,
                             grant_type: "refresh_token",
                             refresh_token: OAuthToken.getRefreshToken()
                         }, data);
-                        if (null !== this.config.clientSecret) {
-                            data.client_secret = this.config.clientSecret;
-                        }
                         data = queryString.stringify(data);
-                        options = angular.extend({
-                            headers: {
-                                Authorization: undefined,
-                                "Content-Type": "application/x-www-form-urlencoded"
-                            }
-                        }, options);
                         return $http.post("" + this.config.baseUrl + this.config.grantPath, data, options).then(function(response) {
                             OAuthToken.setToken(response.data);
                             return response;
@@ -162,21 +192,23 @@
                 }, {
                     key: "revokeToken",
                     value: function revokeToken(data, options) {
+                        if ("header" === this.config.clientCredentials) {
+                            options = addCredentialsInHeader(this.config, options);
+                        } else {
+                            data = addCredentialsInBody(this.config, data);
+                            options = angular.extend({
+                                headers: {
+                                    "Content-Type": "application/x-www-form-urlencoded"
+                                }
+                            }, options);
+                        }
+
                         var refreshToken = OAuthToken.getRefreshToken();
                         data = angular.extend({
-                            client_id: this.config.clientId,
                             token: refreshToken ? refreshToken : OAuthToken.getAccessToken(),
                             token_type_hint: refreshToken ? "refresh_token" : "access_token"
                         }, data);
-                        if (null !== this.config.clientSecret) {
-                            data.client_secret = this.config.clientSecret;
-                        }
                         data = queryString.stringify(data);
-                        options = angular.extend({
-                            headers: {
-                                "Content-Type": "application/x-www-form-urlencoded"
-                            }
-                        }, options);
                         return $http.post("" + this.config.baseUrl + this.config.revokePath, data, options).then(function(response) {
                             OAuthToken.removeToken();
                             return response;
