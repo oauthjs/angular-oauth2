@@ -14,10 +14,6 @@
     }
 })(this, function(angular, ngCookies, queryString) {
     var ngModule = angular.module("angular-oauth2", [ ngCookies ]).config(oauthConfig).factory("oauthInterceptor", oauthInterceptor).provider("OAuth", OAuthProvider).provider("OAuthToken", OAuthTokenProvider);
-    function oauthConfig($httpProvider) {
-        $httpProvider.interceptors.push("oauthInterceptor");
-    }
-    oauthConfig.$inject = [ "$httpProvider" ];
     function oauthInterceptor($q, $rootScope, OAuthToken) {
         return {
             request: function request(config) {
@@ -43,6 +39,10 @@
         };
     }
     oauthInterceptor.$inject = [ "$q", "$rootScope", "OAuthToken" ];
+    function oauthConfig($httpProvider) {
+        $httpProvider.interceptors.push("oauthInterceptor");
+    }
+    oauthConfig.$inject = [ "$httpProvider" ];
     var _createClass = function() {
         function defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
@@ -224,12 +224,18 @@
             angular.extend(config, params);
             return config;
         };
+        var providerConfigure = this.configure;
         this.$get = function($cookies) {
             var OAuthToken = function() {
                 function OAuthToken() {
                     _classCallCheck(this, OAuthToken);
                 }
                 _createClass(OAuthToken, [ {
+                    key: "configure",
+                    value: function configure(params) {
+                        return providerConfigure(params);
+                    }
+                }, {
                     key: "setToken",
                     value: function setToken(data) {
                         return $cookies.putObject(config.name, data, config.options);
