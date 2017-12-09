@@ -65,6 +65,50 @@ function OAuthProvider() {
 
     return config;
   };
+
+  /**
+   * @private
+   * add credentials in header
+   * @param {object} config - Object containing the clientId and the clientSecret
+   * @param {object} options - Optional configuration.
+   * @return {object} Modified optional configuration.
+   */
+  const addCredentialsInHeader = (config, options) => {
+    // Create the credentials string
+    credentials = config.clientId + ":";
+    if (null !== config.clientSecret) {
+        credentials += config.clientSecret;
+    }
+    credentials = "Basic " + btoa(credentials);
+
+    // Add the credentials in the header
+    options = angular.extend({
+        headers: {
+            Authorization: credentials,
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+    }, options);
+
+    return options;
+  };
+  
+  /**
+   * @private
+   * add credentials in body
+   * @param {object} config - Object containing the clientId and the clientSecret
+   * @param {object} data - Request content, e.g., `username` and `password`.
+   * @return {object} Modified request content.
+   */
+  const addCredentialsInBody = (config, data) => {
+    data = angular.extend({
+        client_id: config.clientId
+    }, data);
+    if (null !== config.clientSecret) {
+        data.client_secret = config.clientSecret;
+    }
+
+    return data;
+};
   
   /**
    * Configure.
@@ -121,23 +165,23 @@ function OAuthProvider() {
        */
 
       getAccessToken(data, options) {
+        if ("header" === this.config.clientCredentials) {
+            options = addCredentialsInHeader(this.config, options);
+        } else {
+            data = addCredentialsInBody(this.config, data);
+            options = angular.extend({
+                headers: {
+                    Authorization: undefined,
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            }, options);
+        }
+
         data = angular.extend({
-          client_id: this.config.clientId,
           grant_type: 'password'
         }, data);
 
-        if (null !== this.config.clientSecret) {
-          data.client_secret = this.config.clientSecret;
-        }
-
         data = queryString.stringify(data);
-
-        options = angular.extend({
-          headers: {
-            'Authorization': undefined,
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }, options);
 
         return $http.post(`${this.config.baseUrl}${this.config.grantPath}`, data, options).then((response) => {
           OAuthToken.setToken(response.data);
@@ -156,24 +200,24 @@ function OAuthProvider() {
        */
 
       getRefreshToken(data, options) {
+        if ("header" === this.config.clientCredentials) {
+            options = addCredentialsInHeader(this.config, options);
+        } else {
+            data = addCredentialsInBody(this.config, data);
+            options = angular.extend({
+                headers: {
+                    Authorization: undefined,
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            }, options);
+        }
+
         data = angular.extend({
-          client_id: this.config.clientId,
           grant_type: 'refresh_token',
           refresh_token: OAuthToken.getRefreshToken(),
         }, data);
 
-        if (null !== this.config.clientSecret) {
-          data.client_secret = this.config.clientSecret;
-        }
-
         data = queryString.stringify(data);
-
-        options = angular.extend({
-          headers: {
-            'Authorization': undefined,
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }, options);
 
         return $http.post(`${this.config.baseUrl}${this.config.grantPath}`, data, options).then((response) => {
           OAuthToken.setToken(response.data);
@@ -192,25 +236,26 @@ function OAuthProvider() {
        */
 
       revokeToken(data, options) {
+        if ("header" === this.config.clientCredentials) {
+            options = addCredentialsInHeader(this.config, options);
+        } else {
+            data = addCredentialsInBody(this.config, data);
+            options = angular.extend({
+                headers: {
+                    Authorization: undefined,
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            }, options);
+        }
+
         var refreshToken = OAuthToken.getRefreshToken();
 
         data = angular.extend({
-          client_id: this.config.clientId,
           token: refreshToken ? refreshToken : OAuthToken.getAccessToken(),
           token_type_hint: refreshToken ? 'refresh_token' : 'access_token'
         }, data);
 
-        if (null !== this.config.clientSecret) {
-          data.client_secret = this.config.clientSecret;
-        }
-
         data = queryString.stringify(data);
-
-        options = angular.extend({
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }, options);
 
         return $http.post(`${this.config.baseUrl}${this.config.revokePath}`, data, options).then((response) => {
           OAuthToken.removeToken();
