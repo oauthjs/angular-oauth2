@@ -103,8 +103,7 @@ OAuthProvider.configure({
   clientId: null,
   clientSecret: null,
   grantPath: '/oauth2/token',
-  revokePath: '/oauth2/revoke',
-  clientCredentials: 'body'
+  revokePath: '/oauth2/revoke'
 });
 ```
 
@@ -118,8 +117,7 @@ OAuth.configure({
   clientId: null,
   clientSecret: null,
   grantPath: '/oauth2/token',
-  revokePath: '/oauth2/revoke',
-  clientCredentials: 'body'
+  revokePath: '/oauth2/revoke'
 });
 
 ```
