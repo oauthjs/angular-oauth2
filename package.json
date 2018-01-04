@@ -21,12 +21,11 @@
     "url": "https://github.com/seegno/angular-oauth2/issues"
   },
   "homepage": "https://github.com/seegno/angular-oauth2",
-  "dependencies": {
-    "angular": "1.5.9",
-    "angular-cookies": "1.5.9",
-    "query-string": "^1.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "angular": "^1.5.9",
+    "angular-cookies": "^1.5.9",
+    "query-string": "^1.0.0",
     "angular-mocks": "1.5.9",
     "github-changes": "^1.0.0",
     "gulp": "^3.8.10",
