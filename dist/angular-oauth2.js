@@ -14,6 +14,31 @@
     }
 })(this, function(angular, ngCookies, queryString) {
     var ngModule = angular.module("angular-oauth2", [ ngCookies ]).config(oauthConfig).factory("oauthInterceptor", oauthInterceptor).provider("OAuth", OAuthProvider).provider("OAuthToken", OAuthTokenProvider);
+    function oauthInterceptor($q, $rootScope, OAuthToken) {
+        return {
+            request: function request(config) {
+                config.headers = config.headers || {};
+                if (!config.headers.hasOwnProperty("Authorization") && OAuthToken.getAuthorizationHeader()) {
+                    config.headers.Authorization = OAuthToken.getAuthorizationHeader();
+                }
+                return config;
+            },
+            responseError: function responseError(rejection) {
+                if (!rejection) {
+                    return $q.reject(rejection);
+                }
+                if (400 === rejection.status && rejection.data && ("invalid_request" === rejection.data.error || "invalid_grant" === rejection.data.error)) {
+                    OAuthToken.removeToken();
+                    $rootScope.$emit("oauth:error", rejection);
+                }
+                if (401 === rejection.status && rejection.data && "invalid_token" === rejection.data.error || rejection.headers && rejection.headers("www-authenticate") && 0 === rejection.headers("www-authenticate").indexOf("Bearer")) {
+                    $rootScope.$emit("oauth:error", rejection);
+                }
+                return $q.reject(rejection);
+            }
+        };
+    }
+    oauthInterceptor.$inject = [ "$q", "$rootScope", "OAuthToken" ];
     function oauthConfig($httpProvider) {
         $httpProvider.interceptors.push("oauthInterceptor");
     }
@@ -199,12 +224,18 @@
             angular.extend(config, params);
             return config;
         };
+        var providerConfigure = this.configure;
         this.$get = function($cookies) {
             var OAuthToken = function() {
                 function OAuthToken() {
                     _classCallCheck(this, OAuthToken);
                 }
                 _createClass(OAuthToken, [ {
+                    key: "configure",
+                    value: function configure(params) {
+                        return providerConfigure(params);
+                    }
+                }, {
                     key: "setToken",
                     value: function setToken(data) {
                         return $cookies.putObject(config.name, data, config.options);

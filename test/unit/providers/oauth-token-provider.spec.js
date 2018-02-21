@@ -52,6 +52,11 @@ describe('OAuthTokenProvider', function() {
       OAuthToken.removeToken();
     }));
 
+    it('configure()', inject(function(OAuthToken) {
+      var params = { options: { expires: new Date() } };
+      OAuthToken.configure(params).should.eql(params);
+    }));
+
     it('getAuthorizationHeader()', inject(function(OAuthToken) {
       OAuthToken.getAuthorizationHeader().should.eql('Bearer foo');
     }));

@@ -35,12 +35,18 @@ function OAuthTokenProvider() {
     return config;
   };
 
+  const providerConfigure = this.configure;
+
   /**
    * OAuthToken service.
    */
 
   this.$get = function($cookies) {
     class OAuthToken {
+
+      configure(params) {
+        return providerConfigure(params);
+      }
 
       /**
        * Set token.
