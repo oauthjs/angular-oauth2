@@ -64,7 +64,8 @@ describe('oauthInterceptor', function() {
 
     $httpBackend.expectGET('https://website.com').respond(400, { error: 'invalid_request' });
 
-    $http.get('https://website.com');
+    $http.get('https://website.com')
+      .catch(() => { });
 
     $httpBackend.flush();
 
@@ -77,7 +78,8 @@ describe('oauthInterceptor', function() {
 
     $httpBackend.expectGET('https://website.com').respond(400, { error: 'invalid_request' });
 
-    $http.get('https://website.com');
+    $http.get('https://website.com')
+      .catch(() => { });
 
     $httpBackend.flush();
 
@@ -93,7 +95,8 @@ describe('oauthInterceptor', function() {
 
     $httpBackend.expectGET('https://website.com').respond(400, { error: 'invalid_grant' });
 
-    $http.get('https://website.com');
+    $http.get('https://website.com')
+      .catch(() => { });
 
     $httpBackend.flush();
 
@@ -106,7 +109,8 @@ describe('oauthInterceptor', function() {
 
     $httpBackend.expectGET('https://website.com').respond(400, { error: 'invalid_grant' });
 
-    $http.get('https://website.com');
+    $http.get('https://website.com')
+      .catch(() => { });
 
     $httpBackend.flush();
 
@@ -122,7 +126,8 @@ describe('oauthInterceptor', function() {
 
     $httpBackend.expectGET('https://website.com').respond(401, { error: 'invalid_token' });
 
-    $http.get('https://website.com');
+    $http.get('https://website.com')
+      .catch(() => { });
 
     $httpBackend.flush();
 
@@ -138,7 +143,8 @@ describe('oauthInterceptor', function() {
 
     $httpBackend.expectGET('https://website.com').respond(401, null, { 'www-authenticate': 'Bearer realm="example"' });
 
-    $http.get('https://website.com');
+    $http.get('https://website.com')
+      .catch(() => { });
 
     $httpBackend.flush();
 
