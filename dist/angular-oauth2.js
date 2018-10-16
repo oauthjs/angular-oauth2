@@ -1,6 +1,6 @@
 /**
  * angular-oauth2 - Angular OAuth2
- * @version v4.1.1
+ * @version v4.2.0
  * @link https://github.com/seegno/angular-oauth2
  * @license MIT
  */
@@ -18,6 +18,31 @@
         $httpProvider.interceptors.push("oauthInterceptor");
     }
     oauthConfig.$inject = [ "$httpProvider" ];
+    function oauthInterceptor($q, $rootScope, OAuthToken) {
+        return {
+            request: function request(config) {
+                config.headers = config.headers || {};
+                if (!config.headers.hasOwnProperty("Authorization") && OAuthToken.getAuthorizationHeader()) {
+                    config.headers.Authorization = OAuthToken.getAuthorizationHeader();
+                }
+                return config;
+            },
+            responseError: function responseError(rejection) {
+                if (!rejection) {
+                    return $q.reject(rejection);
+                }
+                if (400 === rejection.status && rejection.data && ("invalid_request" === rejection.data.error || "invalid_grant" === rejection.data.error)) {
+                    OAuthToken.removeToken();
+                    $rootScope.$emit("oauth:error", rejection);
+                }
+                if (401 === rejection.status && rejection.data && "invalid_token" === rejection.data.error || rejection.headers && rejection.headers("www-authenticate") && 0 === rejection.headers("www-authenticate").indexOf("Bearer")) {
+                    $rootScope.$emit("oauth:error", rejection);
+                }
+                return $q.reject(rejection);
+            }
+        };
+    }
+    oauthInterceptor.$inject = [ "$q", "$rootScope", "OAuthToken" ];
     var _createClass = function() {
         function defineProperties(target, props) {
             for (var i = 0; i < props.length; i++) {
@@ -189,7 +214,8 @@
         var config = {
             name: "token",
             options: {
-                secure: true
+                secure: true,
+                storage: "cookie"
             }
         };
         this.configure = function(params) {
@@ -207,12 +233,30 @@
                 _createClass(OAuthToken, [ {
                     key: "setToken",
                     value: function setToken(data) {
-                        return $cookies.putObject(config.name, data, config.options);
+                        switch (config.options.storage) {
+                          case "localStorage":
+                            return window.localStorage.setItem(config.name, JSON.stringify(data));
+
+                          case "sessionStorage":
+                            return window.sessionStorage.setItem(config.name, JSON.stringify(data));
+
+                          default:
+                            return $cookies.putObject(config.name, data, config.options);
+                        }
                     }
                 }, {
                     key: "getToken",
                     value: function getToken() {
-                        return $cookies.getObject(config.name);
+                        switch (config.options.storage) {
+                          case "localStorage":
+                            return window.localStorage.getItem(config.name);
+
+                          case "sessionStorage":
+                            return window.sessionStorage.getItem(config.name);
+
+                          default:
+                            return $cookies.getObject(config.name);
+                        }
                     }
                 }, {
                     key: "getAccessToken",
@@ -248,7 +292,16 @@
                 }, {
                     key: "removeToken",
                     value: function removeToken() {
-                        return $cookies.remove(config.name, config.options);
+                        switch (config.options.storage) {
+                          case "localStorage":
+                            return window.localStorage.removeItem(config.name);
+
+                          case "sessionStorage":
+                            return window.sessionStorage.removeItem(config.name);
+
+                          default:
+                            return $cookies.remove(config.name, config.options);
+                        }
                     }
                 } ]);
                 return OAuthToken;
@@ -257,30 +310,5 @@
         };
         this.$get.$inject = [ "$cookies" ];
     }
-    function oauthInterceptor($q, $rootScope, OAuthToken) {
-        return {
-            request: function request(config) {
-                config.headers = config.headers || {};
-                if (!config.headers.hasOwnProperty("Authorization") && OAuthToken.getAuthorizationHeader()) {
-                    config.headers.Authorization = OAuthToken.getAuthorizationHeader();
-                }
-                return config;
-            },
-            responseError: function responseError(rejection) {
-                if (!rejection) {
-                    return $q.reject(rejection);
-                }
-                if (400 === rejection.status && rejection.data && ("invalid_request" === rejection.data.error || "invalid_grant" === rejection.data.error)) {
-                    OAuthToken.removeToken();
-                    $rootScope.$emit("oauth:error", rejection);
-                }
-                if (401 === rejection.status && rejection.data && "invalid_token" === rejection.data.error || rejection.headers && rejection.headers("www-authenticate") && 0 === rejection.headers("www-authenticate").indexOf("Bearer")) {
-                    $rootScope.$emit("oauth:error", rejection);
-                }
-                return $q.reject(rejection);
-            }
-        };
-    }
-    oauthInterceptor.$inject = [ "$q", "$rootScope", "OAuthToken" ];
     return ngModule;
 });
