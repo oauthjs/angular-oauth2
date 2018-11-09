@@ -13,7 +13,8 @@ function OAuthTokenProvider() {
   var config = {
     name: 'token',
     options: {
-      secure: true
+      secure: true,
+      storage: 'cookie'
     }
   };
 
@@ -47,7 +48,14 @@ function OAuthTokenProvider() {
        */
 
       setToken(data) {
-        return $cookies.putObject(config.name, data, config.options);
+          switch (config.options.storage){
+              case 'localStorage':
+                  return window.localStorage.setItem(config.name, JSON.stringify(data));
+              case 'sessionStorage':
+                  return window.sessionStorage.setItem(config.name, JSON.stringify(data));
+              default:
+                  return $cookies.putObject(config.name, data, config.options);
+          }
       }
 
       /**
@@ -55,7 +63,14 @@ function OAuthTokenProvider() {
        */
 
       getToken() {
-        return $cookies.getObject(config.name);
+        switch (config.options.storage){
+            case 'localStorage':
+                return window.localStorage.getItem(config.name);
+            case 'sessionStorage':
+                return window.sessionStorage.getItem(config.name);
+            default:
+                return $cookies.getObject(config.name);
+        }
       }
 
       /**
@@ -108,7 +123,14 @@ function OAuthTokenProvider() {
        */
 
       removeToken() {
-        return $cookies.remove(config.name, config.options);
+          switch (config.options.storage){
+              case 'localStorage':
+                  return window.localStorage.removeItem(config.name);
+              case 'sessionStorage':
+                  return window.sessionStorage.removeItem(config.name);
+              default:
+                  return $cookies.remove(config.name, config.options);
+          }
       }
     }
 
