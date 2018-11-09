@@ -249,10 +249,10 @@
                     value: function getToken() {
                         switch (config.options.storage) {
                           case "localStorage":
-                            return window.localStorage.getItem(config.name);
+                            return JSON.parse(window.localStorage.getItem(config.name));
 
                           case "sessionStorage":
-                            return window.sessionStorage.getItem(config.name);
+                            return JSON.parse(window.sessionStorage.getItem(config.name));
 
                           default:
                             return $cookies.getObject(config.name);
