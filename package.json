@@ -25,7 +25,7 @@
   "devDependencies": {
     "angular": "^1.5.9",
     "angular-cookies": "^1.5.9",
-    "angular-mocks": "1.5.9",
+    "angular-mocks": "1.8.1",
     "browserify": "^14.5.0",
     "github-changes": "^1.0.0",
     "gulp": "^3.8.10",
