@@ -26,7 +26,7 @@
     "angular": "^1.5.9",
     "angular-cookies": "^1.5.9",
     "angular-mocks": "1.5.9",
-    "browserify": "^14.5.0",
+    "browserify": "^17.0.0",
     "github-changes": "^1.0.0",
     "gulp": "^3.8.10",
     "gulp-babel": "^5.3.0",
